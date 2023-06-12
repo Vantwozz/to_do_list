@@ -6,7 +6,7 @@ import 'package:to_do_list/include/task.dart';
 void main() {
   runApp(
     MaterialApp(
-      home: TaskPage(Task('To do smthing',Priority.high, true ,DateTime(2023)), false),
+      home: HomePage(),//TaskPage(Task('To do smthing',Priority.high, true ,DateTime(2023)), false),
     )
   );
 }
