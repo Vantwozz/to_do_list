@@ -76,22 +76,25 @@ class _TaskPageState extends State<TaskPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none),
-                    hintText: 'Task to do',
-                    filled: true,
-                    fillColor: Colors.white),
-                autofocus: false,
-                maxLines: null,
-                keyboardType: TextInputType.text,
-                minLines: 4,
-                controller: TextEditingController(text: defaultTaskName),
-              ),
-            ),
+                padding: const EdgeInsets.all(16),
+                child: Material(
+                  borderRadius: BorderRadius.circular(8.0),
+                  elevation: 2,
+                  child: TextField(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide.none),
+                        hintText: 'Task to do',
+                        filled: true,
+                        fillColor: Colors.white),
+                    autofocus: false,
+                    maxLines: null,
+                    keyboardType: TextInputType.text,
+                    minLines: 4,
+                    controller: TextEditingController(text: defaultTaskName),
+                  ),
+                )),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 0, 16),
               child: Column(
