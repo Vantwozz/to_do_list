@@ -4,7 +4,9 @@ enum Priority{
 
 class Task{
   String? text;
-  Priority priority = Priority.none;
+  Priority priority;
   DateTime? date;
-  bool done = false;
+  bool done;
+
+  Task([this.text, this.priority = Priority.none, this.done = false, this.date]);
 }

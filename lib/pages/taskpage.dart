@@ -3,22 +3,45 @@ import 'package:to_do_list/include/task.dart';
 import 'package:intl/intl.dart';
 
 class TaskPage extends StatefulWidget {
-  const TaskPage({Key? key}) : super(key: key);
+  TaskPage(this.task, this.isNewTask, {Key? key}) : super(key: key);
+  bool isNewTask = false;
+  Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  State<TaskPage> createState() => _TaskPageState(task, isNewTask);
 }
 
 class _TaskPageState extends State<TaskPage> {
-  var priority = [
+  _TaskPageState(this.task, this.isNewTask) {
+    if (task.date != null) {
+      _switch = true;
+      date = task.date;
+    }
+    switch (task.priority) {
+      case Priority.none:
+        dropdownValue = priorityList[0];
+        break;
+      case Priority.low:
+        dropdownValue = priorityList[1];
+        break;
+      case Priority.high:
+        dropdownValue = priorityList[2];
+        break;
+    }
+    defaultTaskName = task.text;
+  }
+  Task task;
+  bool isNewTask;
+
+  String? defaultTaskName;
+  var priorityList = [
     'None',
     'Low',
     '!!High',
   ];
   bool _switch = false;
   DateTime? date;
-
-  String dropdownValue = 'None';
+  String? dropdownValue;
 
   @override
   void initState() {
@@ -65,6 +88,7 @@ class _TaskPageState extends State<TaskPage> {
                 maxLines: null,
                 keyboardType: TextInputType.text,
                 minLines: 4,
+                controller: TextEditingController(text: defaultTaskName),
               ),
             ),
             const Padding(
@@ -74,7 +98,7 @@ class _TaskPageState extends State<TaskPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 16),
               child: DropdownButton<String>(
-                items: priority.map((String items) {
+                items: priorityList.map((String items) {
                   return DropdownMenuItem(
                     value: items,
                     child: Text(
@@ -123,9 +147,7 @@ class _TaskPageState extends State<TaskPage> {
                           DateTime? pickedDate = await showDatePicker(
                               context: context,
                               initialDate: DateTime.now(),
-                              //get today's date
                               firstDate: DateTime.now(),
-                              //DateTime.now() - not to allow to choose before today.
                               lastDate: DateTime(2101));
                           if (pickedDate != null) {
                             setState(() {
@@ -149,12 +171,14 @@ class _TaskPageState extends State<TaskPage> {
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: TextButton.icon(
-                  onPressed: () {
-                    return;
-                  },
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  label: const Text('Delete', style: TextStyle(fontSize: 16, color: Colors.red))
-              ),
+                  onPressed: isNewTask
+                      ? null
+                      : () {
+                          return;
+                        },
+                  icon: Icon(Icons.delete, color: isNewTask ? Colors.grey[400] : Colors.red),
+                  label: Text('Delete',
+                      style: TextStyle(fontSize: 16, color: isNewTask ? Colors.grey[400] : Colors.red))),
             )
           ],
         ),
