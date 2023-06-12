@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/include/task.dart';
 import 'package:intl/intl.dart';
-
-enum Priority{
-  none, low, high
-}
 
 class TaskPage extends StatefulWidget {
   const TaskPage({Key? key}) : super(key: key);
