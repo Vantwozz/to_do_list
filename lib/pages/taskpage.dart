@@ -30,6 +30,7 @@ class _TaskPageState extends State<TaskPage> {
     }
     defaultTaskName = task.text;
   }
+
   Task task;
   bool isNewTask;
 
@@ -66,7 +67,7 @@ class _TaskPageState extends State<TaskPage> {
               },
               child: const Text(
                 'Save',
-                style: TextStyle(color: Colors.blue, fontSize: 14),
+                style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
               )),
         ],
       ),
@@ -75,12 +76,12 @@ class _TaskPageState extends State<TaskPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 16),
+              padding: const EdgeInsets.all(16),
               child: TextField(
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none),
                     hintText: 'Task to do',
                     filled: true,
                     fillColor: Colors.white),
@@ -91,36 +92,42 @@ class _TaskPageState extends State<TaskPage> {
                 controller: TextEditingController(text: defaultTaskName),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Text('Priority', style: TextStyle(fontSize: 16)),
-            ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 16),
-              child: DropdownButton<String>(
-                items: priorityList.map((String items) {
-                  return DropdownMenuItem(
-                    value: items,
-                    child: Text(
-                      items,
-                      style: TextStyle(
-                          color: items == '!!High' ? Colors.red : Colors.black),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                value: dropdownValue,
-                icon: const Icon(Icons.arrow_drop_down_rounded),
-                isExpanded: true,
+              padding: const EdgeInsets.fromLTRB(16, 12, 0, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Priority', style: TextStyle(fontSize: 16)),
+                  DropdownButton<String>(
+                    items: priorityList.map((String items) {
+                      return DropdownMenuItem(
+                        value: items,
+                        child: Text(
+                          items,
+                          style: TextStyle(
+                            color: items == '!!High'
+                                ? const Color(0xFFFF3B30)
+                                : const Color.fromRGBO(0, 0, 0, 0.3),
+                            fontSize: 14,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    value: dropdownValue,
+                    icon: const Visibility(
+                        visible: false, child: Icon(Icons.accessible)),
+                    isExpanded: true,
+                  )
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               child: Row(
                 children: [
                   Column(
@@ -132,8 +139,8 @@ class _TaskPageState extends State<TaskPage> {
                           date != null
                               ? DateFormat('yyyy-MM-dd').format(date!)
                               : '',
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.blue))
+                          style: const TextStyle(
+                              fontSize: 14, color: Color(0xFF007AFF)))
                     ],
                   ),
                   const Spacer(),
@@ -167,7 +174,7 @@ class _TaskPageState extends State<TaskPage> {
                 ],
               ),
             ),
-            const Divider(color: Colors.black),
+            const Divider(color: Color.fromRGBO(0, 0, 0, 0.2)),
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: TextButton.icon(
@@ -176,9 +183,16 @@ class _TaskPageState extends State<TaskPage> {
                       : () {
                           return;
                         },
-                  icon: Icon(Icons.delete, color: isNewTask ? Colors.grey[400] : Colors.red),
+                  icon: Icon(Icons.delete,
+                      color: isNewTask
+                          ? const Color.fromRGBO(0, 0, 0, 0.15)
+                          : const Color(0xFFFF3B30)),
                   label: Text('Delete',
-                      style: TextStyle(fontSize: 16, color: isNewTask ? Colors.grey[400] : Colors.red))),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: isNewTask
+                              ? const Color.fromRGBO(0, 0, 0, 0.15)
+                              : const Color(0xFFFF3B30)))),
             )
           ],
         ),
