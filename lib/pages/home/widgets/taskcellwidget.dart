@@ -7,12 +7,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class TaskCellWidget extends StatefulWidget {
   const TaskCellWidget({
     required this.task,
+    this.borderRadius,
     required this.checkBoxChanged,
     required this.onDismissed,
     required this.confirmDismiss,
     required Key? key,
   }) : super(key: key);
   final Task task;
+  final BorderRadius? borderRadius;
   final Function(bool? value) checkBoxChanged;
   final Function(DismissDirection direction) confirmDismiss;
   final Function(DismissDirection direction) onDismissed;
@@ -114,10 +116,7 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
       confirmDismiss: (direction) => widget.confirmDismiss(direction),
       child: Material(
         color: Colors.white,
-        /*borderRadius: index == 0
-            ? const BorderRadius.vertical(
-                bottom: Radius.circular(0.0), top: Radius.circular(8.0))
-            : null,*/
+        borderRadius: widget.borderRadius,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
