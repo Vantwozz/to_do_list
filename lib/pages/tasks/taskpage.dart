@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/uils.dart';
+import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 class TaskPage extends StatefulWidget {
