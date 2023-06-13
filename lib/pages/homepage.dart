@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
     final swiped = toDoList[index];
     String action;
 
-    if (direction == DismissDirection.startToEnd) {
+    if (direction == DismissDirection.endToStart) {
       action = "Deleted";
       toDoList.removeAt(index);
       final s = SnackBar(
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<bool?> promptUser(direction) async {
     String action;
-    if (direction == DismissDirection.startToEnd) {
+    if (direction == DismissDirection.endToStart) {
       action = "Delete";
     } else {
       action = "Complete";
@@ -222,9 +222,9 @@ class _HomePageState extends State<HomePage> {
                         itemCount: toDoList.length,
                       ),
                       Material(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(0.0),
-                              bottom: Radius.circular(8.0)),
+                          borderRadius: BorderRadius.vertical(
+                              top: toDoList.isNotEmpty ? const Radius.circular(0.0) : const Radius.circular(8.0),
+                              bottom: const Radius.circular(8.0)),
                           child: TextButton(
                             onPressed: () {
                               return;
