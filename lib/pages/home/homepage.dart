@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/pages/home/widgets/taskcellwidget.dart';
 import 'package:to_do_list/pages/tasks/taskpage.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
@@ -46,10 +47,11 @@ class _HomePageState extends State<HomePage> {
   handleDismiss(DismissDirection direction, int index) async {
     final swiped = toDoList[index];
     String action;
-
     if (direction == DismissDirection.endToStart) {
       action = "Deleted";
-      toDoList.removeAt(index);
+      setState(() {
+        toDoList.removeAt(index);
+      });
       final s = SnackBar(
         content: Text("$action. Do you want to undo?"),
         duration: const Duration(seconds: 3),
@@ -121,7 +123,7 @@ class _HomePageState extends State<HomePage> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 elevation: 2,
@@ -133,61 +135,12 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
-                        Color textColor;
-                        TextDecoration decoration;
-                        if (toDoList[index].done) {
-                          decoration = TextDecoration.lineThrough;
-                          textColor = const Color.fromRGBO(0, 0, 0, 0.3);
-                        } else {
-                          textColor = const Color.fromRGBO(0, 0, 0, 1);
-                          decoration = TextDecoration.none;
-                        }
-                        final textToShow = Text(toDoList[index].text!,
-                            style: TextStyle(
-                                decoration: decoration,
-                                color: textColor,
-                                fontSize: 16),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis);
-                        Color iconColor;
-                        Icon showIcon;
-                        switch (toDoList[index].priority) {
-                          case Priority.none:
-                            showIcon = const Icon(null);
-                            break;
-                          case Priority.low:
-                            showIcon = const Icon(Icons.arrow_downward);
-                            break;
-                          case Priority.high:
-                            showIcon = Icon(
-                              MdiIcons.exclamation,
-                              color: const Color.fromRGBO(255, 58, 48, 1),
-                            );
-                            break;
-                        }
-                        return Dismissible(
+                        return TaskCellWidget(
                           key: UniqueKey(),
-                          secondaryBackground: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            alignment: AlignmentDirectional.centerStart,
-                            color: Colors.red.shade300,
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                          ),
-                          background: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            alignment: AlignmentDirectional.centerEnd,
-                            color: Colors.lightGreen,
-                            child: const Icon(
-                              Icons.check_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                          onDismissed: (direction) {
+                          task: toDoList[index],
+                          checkBoxChanged: (value) {
                             setState(() {
-                              handleDismiss(direction, index);
+                              toDoList[index].done = !toDoList[index].done;
                             });
                           },
                           confirmDismiss: (direction) async {
@@ -201,70 +154,9 @@ class _HomePageState extends State<HomePage> {
                             }
                             return dismissed;
                           },
-                          child: Material(
-                            color: Colors.white,
-                            borderRadius: index == 0
-                                ? const BorderRadius.vertical(
-                                    bottom: Radius.circular(0.0),
-                                    top: Radius.circular(8.0))
-                                : null,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Checkbox(
-                                        value: toDoList[index].done,
-                                        onChanged: (bool? value) {},
-                                      ),
-
-                                      showIcon,
-                                      /*Visibility(
-                                        visible: toDoList[index].priority ==
-                                                Priority.high
-                                            ? true
-                                            : false,
-                                        child: showIcon,
-                                      ),*/
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            textToShow,
-                                            Visibility(
-                                              visible:
-                                                  toDoList[index].date == null
-                                                      ? false
-                                                      : true,
-                                              child: Text(
-                                                toDoList[index].date != null
-                                                    ? DateFormat('yyyy-MM-dd')
-                                                        .format(toDoList[index]
-                                                            .date!)
-                                                    : '',
-                                                style: const TextStyle(
-                                                    color: Color.fromRGBO(
-                                                        0, 0, 0, 0.3),
-                                                    fontSize: 14),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.info_outline)),
-                              ],
-                            ),
-                          ),
+                          onDismissed: (direction) {
+                            handleDismiss(direction, index);
+                          },
                         );
                       },
                       itemCount: toDoList.length,
