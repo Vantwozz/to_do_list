@@ -107,6 +107,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F6F2),
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
@@ -123,7 +124,7 @@ class _HomePageState extends State<HomePage> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 3),
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 elevation: 2,
@@ -138,6 +139,11 @@ class _HomePageState extends State<HomePage> {
                         return TaskCellWidget(
                           key: UniqueKey(),
                           task: toDoList[index],
+                          borderRadius: index == 0
+                              ? const BorderRadius.vertical(
+                                  bottom: Radius.circular(0.0),
+                                  top: Radius.circular(8.0))
+                              : null,
                           checkBoxChanged: (value) {
                             setState(() {
                               toDoList[index].done = !toDoList[index].done;
