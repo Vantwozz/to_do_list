@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/homepage.dart';
-import 'package:to_do_list/pages/taskpage.dart';
-import 'package:to_do_list/include/task.dart';
+import 'package:to_do_list/pages/home/homepage.dart';
+import 'package:to_do_list/pages/tasks/taskpage.dart';
+import 'package:to_do_list/utils/uils.dart';
 
 void main() {
   runApp(

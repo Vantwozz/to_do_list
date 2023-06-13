@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/include/task.dart';
+import 'package:to_do_list/utils/uils.dart';
 import 'package:intl/intl.dart';
 
 class TaskPage extends StatefulWidget {
@@ -8,7 +8,7 @@ class TaskPage extends StatefulWidget {
   Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState(task, isNewTask);
+  State<TaskPage> createState() => _TaskPageState(task, isNewTask);//вынести
 }
 
 class _TaskPageState extends State<TaskPage> {
