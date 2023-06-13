@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/pages/tasks/taskpage.dart';
-import 'package:to_do_list/utils/uils.dart';
+import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -158,9 +159,9 @@ class _HomePageState extends State<HomePage> {
                             showIcon = const Icon(Icons.arrow_downward);
                             break;
                           case Priority.high:
-                            showIcon = const Icon(
-                              Icons.accessible,
-                              color: Color.fromRGBO(255, 58, 48, 1),
+                            showIcon = Icon(
+                              MdiIcons.exclamation,
+                              color: const Color.fromRGBO(255, 58, 48, 1),
                             );
                             break;
                         }
@@ -218,7 +219,15 @@ class _HomePageState extends State<HomePage> {
                                         value: toDoList[index].done,
                                         onChanged: (bool? value) {},
                                       ),
+
                                       showIcon,
+                                      /*Visibility(
+                                        visible: toDoList[index].priority ==
+                                                Priority.high
+                                            ? true
+                                            : false,
+                                        child: showIcon,
+                                      ),*/
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
