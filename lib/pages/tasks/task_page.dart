@@ -78,7 +78,7 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _onDelete() async {
-    if(await _promptUser()) {
+    if (await _promptUser()) {
       NavigationManager.instance.pop(
         Task(),
       );
@@ -100,7 +100,9 @@ class _TaskPageState extends State<TaskPage> {
     return await showDialog<bool>(
           builder: (BuildContext context) {
             return AlertDialog(
-              content: Text(isNewTask! ? 'You can\'t make empty task! Are you want to go back?' : 'Are you sure you want to Delete this task?'),
+              content: Text(isNewTask!
+                  ? 'You can\'t make empty task! Are you want to go back?'
+                  : 'Are you sure you want to Delete this task?'),
               actions: <Widget>[
                 TextButton(
                   style: TextButton.styleFrom(
@@ -182,6 +184,22 @@ class _TaskPageState extends State<TaskPage> {
                 children: [
                   const Text('Priority', style: TextStyle(fontSize: 16)),
                   DropdownButton<String>(
+                    selectedItemBuilder: (BuildContext context) {
+                      return priorityList.map<Widget>((String item) {
+                        return Container(
+                          alignment: Alignment.centerLeft,
+                          constraints: const BoxConstraints(minWidth: 100),
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              color: item == '!!High'
+                                  ? const Color.fromRGBO(255, 59, 48, 1)
+                                  : const Color.fromRGBO(0, 0, 0, 0.3),
+                            ),
+                          ),
+                        );
+                      }).toList();
+                    },
                     items: priorityList.map((String items) {
                       return DropdownMenuItem(
                         value: items,
@@ -190,7 +208,7 @@ class _TaskPageState extends State<TaskPage> {
                           style: TextStyle(
                             color: items == '!!High'
                                 ? const Color(0xFFFF3B30)
-                                : const Color.fromRGBO(0, 0, 0, 0.3),
+                                : const Color.fromRGBO(0, 0, 0, 1),
                             fontSize: 14,
                           ),
                         ),
