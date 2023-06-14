@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/home/widgets/taskcellwidget.dart';
-import 'package:to_do_list/pages/tasks/taskpage.dart';
+import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
+import 'package:to_do_list/pages/home/widgets/app_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -47,23 +47,34 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Future<void> _onTaskOpen(int index, Task task)async{
+  Future<void> _onTaskOpen(int index, Task task) async {
     final result = await NavigationManager.instance.openTask(task);
-    if(result != null){
+    if (result != null) {
       setState(() {
-        if(result.text != null){
+        if (result.text != null) {
           toDoList[index] = result;
-        }else{
+        } else {
           toDoList.removeAt(index);
         }
       });
     }
   }
 
-  void _numOfCompleted(){
+  Future<void> _onTaskCreate() async{
+    final result = await NavigationManager.instance.openTask(Task());
+    if (result != null) {
+      setState(() {
+        if (result.text != null) {
+          toDoList.add(result);
+        }
+      });
+    }
+  }
+
+  void _numOfCompleted() {
     int num = 0;
-    for(int i = 0; i< toDoList.length; i++){
-      if(toDoList[i].done){
+    for (int i = 0; i < toDoList.length; i++) {
+      if (toDoList[i].done) {
         num++;
       }
     }
@@ -72,7 +83,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  handleDismiss(DismissDirection direction, int index) async {
+  Future<void> _handleDismiss(DismissDirection direction, int index) async {
     final swiped = toDoList[index];
     String action;
     if (direction == DismissDirection.endToStart) {
@@ -95,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<bool> promptUser(direction) async {
+  Future<bool> _promptUser(direction) async {
     String action;
     if (direction == DismissDirection.endToStart) {
       action = "Delete";
@@ -140,80 +151,14 @@ class _HomePageState extends State<HomePage> {
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: const Color(0xFFF7F6F2),
-            collapsedHeight: 80,
-            expandedHeight: 164,
-            flexibleSpace: FlexibleSpaceBar(
-              expandedTitleScale: 1.26,
-              centerTitle: true,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 40,
-                          ),
-                          Text(
-                            'My tasks',
-                            style: TextStyle(fontSize: 32, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 15,
-                      )
-                    ],
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      !_showCompleted ? Icons.visibility : Icons.visibility_off,
-                      color: const Color.fromRGBO(0, 122, 255, 1),
-                      size: 19,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showCompleted = !_showCompleted;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              background: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const SizedBox(
-                        width: 52,
-                      ),
-                      Text(
-                        "Completed - $completed",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color.fromRGBO(0, 0, 0, 0.3),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                ],
-              ),
-            ),
+          CustomAppBar(
+            showCompleted: _showCompleted,
+            completed: completed,
+            onEyePressed: (){
+              setState(() {
+                _showCompleted = !_showCompleted;
+              });
+            },
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -239,7 +184,8 @@ class _HomePageState extends State<HomePage> {
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return Visibility(
-                          visible: !toDoList[index].done || (_showCompleted && toDoList[index].done),
+                          visible: !toDoList[index].done ||
+                              (_showCompleted && toDoList[index].done),
                           child: TaskCellWidget(
                             key: UniqueKey(),
                             task: toDoList[index],
@@ -255,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                               _numOfCompleted();
                             },
                             confirmDismiss: (direction) async {
-                              bool dismissed = await promptUser(direction);
+                              bool dismissed = await _promptUser(direction);
                               if (dismissed &&
                                   direction == DismissDirection.startToEnd) {
                                 setState(() {
@@ -267,10 +213,11 @@ class _HomePageState extends State<HomePage> {
                               return dismissed;
                             },
                             onDismissed: (direction) {
-                              handleDismiss(direction, index);
+                              _handleDismiss(direction, index);
                               _numOfCompleted();
                             },
-                            onInfoPressed: () => _onTaskOpen(index, toDoList[index]),
+                            onInfoPressed: () =>
+                                _onTaskOpen(index, toDoList[index]),
                           ),
                         );
                       },
@@ -289,7 +236,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          return;
+                          _onTaskCreate();
                         },
                         style:
                             TextButton.styleFrom(backgroundColor: Colors.white),
@@ -305,7 +252,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          return;
+          _onTaskCreate();
         },
         child: const Icon(Icons.add),
       ),
