@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/navigation/navigation.dart';
 import 'package:intl/intl.dart';
 
 class TaskPage extends StatefulWidget {
@@ -13,8 +14,7 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> {
   Task? task;
   bool? isNewTask;
-
-  String? defaultTaskName;
+  String? taskName;
   var priorityList = [
     'None',
     'Low',
@@ -23,6 +23,7 @@ class _TaskPageState extends State<TaskPage> {
   bool _switch = false;
   DateTime? date;
   String? dropdownValue;
+  TextEditingController? textController;
 
   @override
   void initState() {
@@ -43,9 +44,88 @@ class _TaskPageState extends State<TaskPage> {
         dropdownValue = priorityList[2];
         break;
     }
-    defaultTaskName = task!.text;
+    taskName = task!.text;
+    textController = TextEditingController(text: taskName);
     // TODO: implement initState
     super.initState();
+  }
+
+  Priority _dropdownValueToPriority() {
+    Priority? pr;
+    switch (dropdownValue) {
+      case 'None':
+        pr = Priority.none;
+        break;
+      case 'Low':
+        pr = Priority.low;
+        break;
+      case '!!High':
+        pr = Priority.high;
+        break;
+    }
+    return pr!;
+  }
+
+  @override
+  void dispose() {
+    textController!.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  void _onGoBack() {
+    NavigationManager.instance.pop(task);
+  }
+
+  void _onDelete() async {
+    if(await _promptUser()) {
+      NavigationManager.instance.pop(
+        Task(),
+      );
+    }
+  }
+
+  void _onSave() {
+    if (textController!.text != '') {
+      NavigationManager.instance.pop(
+        Task(
+            textController!.text, _dropdownValueToPriority(), task!.done, date),
+      );
+    } else {
+      _onDelete();
+    }
+  }
+
+  Future<bool> _promptUser() async {
+    return await showDialog<bool>(
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text(isNewTask! ? 'You can\'t make empty task! Are you want to go back?' : 'Are you sure you want to Delete this task?'),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+          context: context,
+        ) ??
+        false;
   }
 
   @override
@@ -55,18 +135,19 @@ class _TaskPageState extends State<TaskPage> {
         backgroundColor: const Color(0xFFf7f6f2),
         leading: CloseButton(
             onPressed: () {
-              return;
+              _onGoBack();
             },
             color: Colors.black),
         actions: [
           TextButton(
-              onPressed: () {
-                return;
-              },
-              child: const Text(
-                'Save',
-                style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
-              )),
+            onPressed: () {
+              _onSave();
+            },
+            child: const Text(
+              'Save',
+              style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -90,7 +171,7 @@ class _TaskPageState extends State<TaskPage> {
                   maxLines: null,
                   keyboardType: TextInputType.text,
                   minLines: 4,
-                  controller: TextEditingController(text: defaultTaskName),
+                  controller: textController,
                 ),
               ),
             ),
@@ -184,7 +265,7 @@ class _TaskPageState extends State<TaskPage> {
                 onPressed: isNewTask!
                     ? null
                     : () {
-                        return;
+                        _onDelete();
                       },
                 icon: Icon(Icons.delete,
                     color: isNewTask!
