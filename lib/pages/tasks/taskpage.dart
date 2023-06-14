@@ -3,36 +3,16 @@ import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 class TaskPage extends StatefulWidget {
-  TaskPage(this.task, this.isNewTask, {Key? key}) : super(key: key);
-  bool isNewTask = false;
-  Task task;
+  const TaskPage({required this.task, Key? key}) : super(key: key);
+  final Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState(task, isNewTask); //вынести
+  State<TaskPage> createState() => _TaskPageState();
 }
 
 class _TaskPageState extends State<TaskPage> {
-  _TaskPageState(this.task, this.isNewTask) {
-    if (task.date != null) {
-      _switch = true;
-      date = task.date;
-    }
-    switch (task.priority) {
-      case Priority.none:
-        dropdownValue = priorityList[0];
-        break;
-      case Priority.low:
-        dropdownValue = priorityList[1];
-        break;
-      case Priority.high:
-        dropdownValue = priorityList[2];
-        break;
-    }
-    defaultTaskName = task.text;
-  }
-
-  Task task;
-  bool isNewTask;
+  Task? task;
+  bool? isNewTask;
 
   String? defaultTaskName;
   var priorityList = [
@@ -46,6 +26,24 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   void initState() {
+    task = widget.task;
+    isNewTask = task!.text == null;
+    if (task!.date != null) {
+      _switch = true;
+      date = task!.date;
+    }
+    switch (task!.priority) {
+      case Priority.none:
+        dropdownValue = priorityList[0];
+        break;
+      case Priority.low:
+        dropdownValue = priorityList[1];
+        break;
+      case Priority.high:
+        dropdownValue = priorityList[2];
+        break;
+    }
+    defaultTaskName = task!.text;
     // TODO: implement initState
     super.initState();
   }
@@ -183,20 +181,20 @@ class _TaskPageState extends State<TaskPage> {
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: TextButton.icon(
-                onPressed: isNewTask
+                onPressed: isNewTask!
                     ? null
                     : () {
                         return;
                       },
                 icon: Icon(Icons.delete,
-                    color: isNewTask
+                    color: isNewTask!
                         ? const Color.fromRGBO(0, 0, 0, 0.15)
                         : const Color(0xFFFF3B30)),
                 label: Text(
                   'Delete',
                   style: TextStyle(
                     fontSize: 16,
-                    color: isNewTask
+                    color: isNewTask!
                         ? const Color.fromRGBO(0, 0, 0, 0.15)
                         : const Color(0xFFFF3B30),
                   ),

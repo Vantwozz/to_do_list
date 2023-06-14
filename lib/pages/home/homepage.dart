@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:to_do_list/pages/home/widgets/taskcellwidget.dart';
 import 'package:to_do_list/pages/tasks/taskpage.dart';
 import 'package:to_do_list/utils/utils.dart';
-import 'package:intl/intl.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:to_do_list/navigation/navigation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,28 +13,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Task> toDoList = [
-    Task('something', Priority.none, false),
+    Task('something 1', Priority.none, false),
     Task(
         'another task loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
         Priority.low,
         true,
         DateTime.now()),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.high, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
-    Task('something', Priority.none, false),
+    Task('something 2', Priority.none, false),
+    Task('something 3', Priority.none, false),
+    Task('something 4', Priority.none, false),
+    Task('something 5', Priority.none, false),
+    Task('something 6', Priority.none, false),
+    Task('something 7', Priority.high, false),
+    Task('something 8', Priority.none, false),
+    Task('something 9', Priority.none, false),
+    Task('something 10', Priority.none, false),
+    Task('something 11', Priority.none, false),
+    Task('something 12', Priority.none, false),
+    Task('something 13', Priority.none, false),
+    Task('something 14', Priority.none, false),
+    Task('something 15', Priority.none, false),
+    Task('something 16', Priority.none, false),
+    Task('something 17', Priority.none, false),
   ];
 
   int completed = 0;
@@ -43,8 +42,34 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    _numOfCompleted();
     // TODO: implement initState
     super.initState();
+  }
+
+  Future<void> _onTaskOpen(int index, Task task)async{
+    final result = await NavigationManager.instance.openTask(task);
+    if(result != null){
+      setState(() {
+        if(result.text != null){
+          toDoList[index] = result;
+        }else{
+          toDoList.removeAt(index);
+        }
+      });
+    }
+  }
+
+  void _numOfCompleted(){
+    int num = 0;
+    for(int i = 0; i< toDoList.length; i++){
+      if(toDoList[i].done){
+        num++;
+      }
+    }
+    setState(() {
+      completed = num;
+    });
   }
 
   handleDismiss(DismissDirection direction, int index) async {
@@ -63,6 +88,7 @@ class _HomePageState extends State<HomePage> {
             textColor: Colors.yellow,
             onPressed: () {
               setState(() => toDoList.insert(index, swiped));
+              _numOfCompleted();
             }),
       );
       ScaffoldMessenger.of(context).showSnackBar(s);
@@ -150,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   IconButton(
                     icon: Icon(
-                      _showCompleted ? Icons.visibility : Icons.visibility_off,
+                      !_showCompleted ? Icons.visibility : Icons.visibility_off,
                       color: const Color.fromRGBO(0, 122, 255, 1),
                       size: 19,
                     ),
@@ -191,10 +217,19 @@ class _HomePageState extends State<HomePage> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 3),
-              child: Material(
-                borderRadius: BorderRadius.circular(8.0),
-                elevation: 2,
+              padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
                 child: Column(
                   children: [
                     ListView.builder(
@@ -203,33 +238,40 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
-                        return TaskCellWidget(
-                          key: UniqueKey(),
-                          task: toDoList[index],
-                          borderRadius: index == 0
-                              ? const BorderRadius.vertical(
-                                  bottom: Radius.circular(0.0),
-                                  top: Radius.circular(8.0))
-                              : null,
-                          checkBoxChanged: (value) {
-                            setState(() {
-                              toDoList[index].done = !toDoList[index].done;
-                            });
-                          },
-                          confirmDismiss: (direction) async {
-                            bool dismissed = await promptUser(direction);
-                            if (dismissed &&
-                                direction == DismissDirection.startToEnd) {
+                        return Visibility(
+                          visible: !toDoList[index].done || (_showCompleted && toDoList[index].done),
+                          child: TaskCellWidget(
+                            key: UniqueKey(),
+                            task: toDoList[index],
+                            borderRadius: index == 0
+                                ? const BorderRadius.vertical(
+                                    bottom: Radius.circular(0.0),
+                                    top: Radius.circular(8.0))
+                                : null,
+                            checkBoxChanged: (value) {
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
-                              return false;
-                            }
-                            return dismissed;
-                          },
-                          onDismissed: (direction) {
-                            handleDismiss(direction, index);
-                          },
+                              _numOfCompleted();
+                            },
+                            confirmDismiss: (direction) async {
+                              bool dismissed = await promptUser(direction);
+                              if (dismissed &&
+                                  direction == DismissDirection.startToEnd) {
+                                setState(() {
+                                  toDoList[index].done = !toDoList[index].done;
+                                });
+                                _numOfCompleted();
+                                return false;
+                              }
+                              return dismissed;
+                            },
+                            onDismissed: (direction) {
+                              handleDismiss(direction, index);
+                              _numOfCompleted();
+                            },
+                            onInfoPressed: () => _onTaskOpen(index, toDoList[index]),
+                          ),
                         );
                       },
                       itemCount: toDoList.length,
