@@ -109,39 +109,40 @@ class _HomePageState extends State<HomePage> {
   Future<bool> _promptUser(direction) async {
     String action;
     if (direction == DismissDirection.endToStart) {
-      action = "Delete";
+      action = "delete";
     } else {
       action = "Complete";
+      return true;
     }
     return await showDialog<bool>(
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text('Are you sure you want to $action?'),
-              actions: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  child: const Text('Ok'),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
-            );
-          },
-          context: context,
-        ) ??
-        false;
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text('Are you sure you want to $action?'),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+      context: context,
+    ) ??
+    false;
   }
 
   @override
