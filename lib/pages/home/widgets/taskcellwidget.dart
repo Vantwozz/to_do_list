@@ -11,6 +11,7 @@ class TaskCellWidget extends StatefulWidget {
     required this.checkBoxChanged,
     required this.onDismissed,
     required this.confirmDismiss,
+    required this.onInfoPressed,
     required Key? key,
   }) : super(key: key);
   final Task task;
@@ -18,6 +19,7 @@ class TaskCellWidget extends StatefulWidget {
   final Function(bool? value) checkBoxChanged;
   final Function(DismissDirection direction) confirmDismiss;
   final Function(DismissDirection direction) onDismissed;
+  final Function() onInfoPressed;
 
   @override
   State<TaskCellWidget> createState() => _TaskCellWidgetState();
@@ -154,7 +156,7 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () => widget.onInfoPressed(),
               icon: const Icon(
                 Icons.info_outline,
                 color: Color.fromRGBO(0, 0, 0, 0.3),
