@@ -38,6 +38,9 @@ class _HomePageState extends State<HomePage> {
     Task('something', Priority.none, false),
   ];
 
+  int completed = 0;
+  bool _showCompleted = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -111,14 +114,78 @@ class _HomePageState extends State<HomePage> {
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
-          const SliverAppBar(
+          SliverAppBar(
             pinned: true,
-            backgroundColor: Color(0xFFF7F6F2),
-            expandedHeight: 150.0,
+            backgroundColor: const Color(0xFFF7F6F2),
+            collapsedHeight: 80,
+            expandedHeight: 164,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                'SliverAppBar',
-                style: TextStyle(color: Colors.black),
+              expandedTitleScale: 1.26,
+              centerTitle: true,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                          ),
+                          Text(
+                            'My tasks',
+                            style: TextStyle(fontSize: 32, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      )
+                    ],
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      _showCompleted ? Icons.visibility : Icons.visibility_off,
+                      color: const Color.fromRGBO(0, 122, 255, 1),
+                      size: 19,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showCompleted = !_showCompleted;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              background: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const SizedBox(
+                        width: 52,
+                      ),
+                      Text(
+                        "Completed - $completed",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                ],
               ),
             ),
           ),
@@ -167,12 +234,16 @@ class _HomePageState extends State<HomePage> {
                       },
                       itemCount: toDoList.length,
                     ),
-                    Material(
-                      borderRadius: BorderRadius.vertical(
-                        top: toDoList.isNotEmpty
-                            ? const Radius.circular(0.0)
-                            : const Radius.circular(8.0),
-                        bottom: const Radius.circular(8.0),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.vertical(
+                          top: toDoList.isNotEmpty
+                              ? const Radius.circular(0.0)
+                              : const Radius.circular(8.0),
+                          bottom: const Radius.circular(8.0),
+                        ),
+                        color: const Color.fromRGBO(255, 255, 255, 1),
                       ),
                       child: TextButton(
                         onPressed: () {
@@ -189,6 +260,12 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          return;
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
