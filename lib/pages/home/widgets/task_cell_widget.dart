@@ -35,38 +35,49 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
   }
 
   Color _getColor(Set<MaterialState> states) {
-    if(task!.done){
+    if (task!.done) {
       return const Color.fromRGBO(52, 199, 89, 1);
-    }else if (task!.priority == Priority.high) {
+    } else if (task!.priority == Priority.high) {
       return const Color.fromRGBO(255, 49, 48, 1);
     } else {
       return const Color.fromRGBO(0, 0, 0, 0.3);
     }
   }
 
-  Visibility _getIconToShow() {
-    Icon showIcon;
+  TextSpan _getIconToShow() {
+    TextSpan showIcon;
     bool visible = false;
     switch (task!.priority) {
       case Priority.none:
-        showIcon = const Icon(null);
+        showIcon = const TextSpan();
         break;
       case Priority.low:
-        showIcon = const Icon(Icons.arrow_downward);
+        showIcon = const TextSpan(
+          children: [
+            WidgetSpan(
+              child: Icon(
+                Icons.arrow_downward,
+                color: Color.fromRGBO(142, 142, 147, 1),
+                size: 16,
+              ),
+            ),
+          ],
+        );
         visible = true;
         break;
       case Priority.high:
-        showIcon = Icon(
-          MdiIcons.exclamation,
-          color: const Color.fromRGBO(255, 58, 48, 1),
+        showIcon = const TextSpan(
+          text: '!!',
+          style: TextStyle(
+            color: Color.fromRGBO(255, 59, 48, 1),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         );
         visible = true;
         break;
     }
-    return Visibility(
-      visible: visible,
-      child: showIcon,
-    );
+    return showIcon;
   }
 
   Text _getTextToShow() {
@@ -130,7 +141,9 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
                     onChanged: (bool? value) => widget.checkBoxChanged(value),
                     fillColor: MaterialStateColor.resolveWith(_getColor),
                   ),
-                  _getIconToShow(),
+                  RichText(
+                    text: _getIconToShow(),
+                  ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
