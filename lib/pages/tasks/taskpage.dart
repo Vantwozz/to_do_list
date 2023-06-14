@@ -8,7 +8,7 @@ class TaskPage extends StatefulWidget {
   Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState(task, isNewTask);//вынести
+  State<TaskPage> createState() => _TaskPageState(task, isNewTask); //вынести
 }
 
 class _TaskPageState extends State<TaskPage> {
@@ -76,25 +76,26 @@ class _TaskPageState extends State<TaskPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-                padding: const EdgeInsets.all(16),
-                child: Material(
-                  borderRadius: BorderRadius.circular(8.0),
-                  elevation: 2,
-                  child: TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide.none),
-                        hintText: 'Task to do',
-                        filled: true,
-                        fillColor: Colors.white),
-                    autofocus: false,
-                    maxLines: null,
-                    keyboardType: TextInputType.text,
-                    minLines: 4,
-                    controller: TextEditingController(text: defaultTaskName),
-                  ),
-                )),
+              padding: const EdgeInsets.all(16),
+              child: Material(
+                borderRadius: BorderRadius.circular(8.0),
+                elevation: 2,
+                child: TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none),
+                      hintText: 'Task to do',
+                      filled: true,
+                      fillColor: Colors.white),
+                  autofocus: false,
+                  maxLines: null,
+                  keyboardType: TextInputType.text,
+                  minLines: 4,
+                  controller: TextEditingController(text: defaultTaskName),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 0, 16),
               child: Column(
@@ -148,32 +149,33 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   const Spacer(),
                   Switch(
-                      value: _switch,
-                      onChanged: (bool value) async {
-                        setState(() {
-                          _switch = value;
-                        });
-                        if (value) {
-                          DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime(2101));
-                          if (pickedDate != null) {
-                            setState(() {
-                              date = pickedDate;
-                            });
-                          } else {
-                            setState(() {
-                              _switch = false;
-                            });
-                          }
+                    value: _switch,
+                    onChanged: (bool value) async {
+                      setState(() {
+                        _switch = value;
+                      });
+                      if (value) {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2101));
+                        if (pickedDate != null) {
+                          setState(() {
+                            date = pickedDate;
+                          });
                         } else {
                           setState(() {
-                            date = null;
+                            _switch = false;
                           });
                         }
-                      })
+                      } else {
+                        setState(() {
+                          date = null;
+                        });
+                      }
+                    },
+                  )
                 ],
               ),
             ),
@@ -181,21 +183,25 @@ class _TaskPageState extends State<TaskPage> {
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: TextButton.icon(
-                  onPressed: isNewTask
-                      ? null
-                      : () {
-                          return;
-                        },
-                  icon: Icon(Icons.delete,
-                      color: isNewTask
-                          ? const Color.fromRGBO(0, 0, 0, 0.15)
-                          : const Color(0xFFFF3B30)),
-                  label: Text('Delete',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: isNewTask
-                              ? const Color.fromRGBO(0, 0, 0, 0.15)
-                              : const Color(0xFFFF3B30)))),
+                onPressed: isNewTask
+                    ? null
+                    : () {
+                        return;
+                      },
+                icon: Icon(Icons.delete,
+                    color: isNewTask
+                        ? const Color.fromRGBO(0, 0, 0, 0.15)
+                        : const Color(0xFFFF3B30)),
+                label: Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isNewTask
+                        ? const Color.fromRGBO(0, 0, 0, 0.15)
+                        : const Color(0xFFFF3B30),
+                  ),
+                ),
+              ),
             )
           ],
         ),
