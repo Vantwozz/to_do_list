@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _onTaskCreate() async{
+  Future<void> _onTaskCreate() async {
     final result = await NavigationManager.instance.openTask(Task());
     if (result != null) {
       setState(() {
@@ -115,34 +115,34 @@ class _HomePageState extends State<HomePage> {
       return true;
     }
     return await showDialog<bool>(
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text('Are you sure you want to $action?'),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-      context: context,
-    ) ??
-    false;
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('Are you sure you want to $action?'),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+          context: context,
+        ) ??
+        false;
   }
 
   @override
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
           CustomAppBar(
             showCompleted: _showCompleted,
             completed: completed,
-            onEyePressed: (){
+            onEyePressed: () {
               setState(() {
                 _showCompleted = !_showCompleted;
               });
@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+              padding: const EdgeInsets.fromLTRB(8, 3, 8, 18),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
@@ -239,9 +239,24 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           _onTaskCreate();
                         },
-                        style:
-                            TextButton.styleFrom(backgroundColor: Colors.white),
-                        child: const Text('Add'),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        child: const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 40,
+                            ),
+                            Text(
+                              'Add',
+                              style: TextStyle(
+                                color: Color.fromRGBO(0, 0, 0, 0.3),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

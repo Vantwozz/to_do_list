@@ -136,10 +136,11 @@ class _TaskPageState extends State<TaskPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFf7f6f2),
         leading: CloseButton(
-            onPressed: () {
-              _onGoBack();
-            },
-            color: Colors.black),
+          onPressed: () {
+            _onGoBack();
+          },
+          color: Colors.black,
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -163,12 +164,14 @@ class _TaskPageState extends State<TaskPage> {
                 elevation: 2,
                 child: TextField(
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide.none),
-                      hintText: 'Task to do',
-                      filled: true,
-                      fillColor: Colors.white),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    hintText: 'Task to do',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
                   autofocus: false,
                   maxLines: null,
                   keyboardType: TextInputType.text,
@@ -221,7 +224,11 @@ class _TaskPageState extends State<TaskPage> {
                     },
                     value: dropdownValue,
                     icon: const Visibility(
-                        visible: false, child: Icon(Icons.accessible)),
+                      visible: false,
+                      child: Icon(
+                        Icons.accessible,
+                      ),
+                    ),
                     isExpanded: true,
                   )
                 ],
@@ -234,14 +241,21 @@ class _TaskPageState extends State<TaskPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Make by date',
-                          style: TextStyle(fontSize: 16)),
+                      const Text(
+                        'Make by date',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
                       Text(
-                          date != null
-                              ? DateFormat('yyyy-MM-dd').format(date!)
-                              : '',
-                          style: const TextStyle(
-                              fontSize: 14, color: Color(0xFF007AFF)))
+                        date != null
+                            ? DateFormat('yyyy-MM-dd').format(date!)
+                            : '',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF007AFF),
+                        ),
+                      ),
                     ],
                   ),
                   const Spacer(),
@@ -253,10 +267,11 @@ class _TaskPageState extends State<TaskPage> {
                       });
                       if (value) {
                         DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2101));
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2101),
+                        );
                         if (pickedDate != null) {
                           setState(() {
                             date = pickedDate;
@@ -272,7 +287,7 @@ class _TaskPageState extends State<TaskPage> {
                         });
                       }
                     },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -285,10 +300,12 @@ class _TaskPageState extends State<TaskPage> {
                     : () {
                         _onDelete();
                       },
-                icon: Icon(Icons.delete,
-                    color: isNewTask!
-                        ? const Color.fromRGBO(0, 0, 0, 0.15)
-                        : const Color(0xFFFF3B30)),
+                icon: Icon(
+                  Icons.delete,
+                  color: isNewTask!
+                      ? const Color.fromRGBO(0, 0, 0, 0.15)
+                      : const Color(0xFFFF3B30),
+                ),
                 label: Text(
                   'Delete',
                   style: TextStyle(
