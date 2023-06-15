@@ -48,6 +48,21 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  bool _isFirstOfUncompleted(int index) {
+    int i = 0;
+    while (i < toDoList.length) {
+      if (!toDoList[i].done) {
+        break;
+      }
+      i++;
+    }
+    return (i == index);
+  }
+
+  bool _allCompleted(){
+    return (completed == toDoList.length);
+  }
+
   Future<void> _onTaskOpen(int index, Task task) async {
     logger.l.d('Info button pressed. Opening task page');
     final result = await NavigationManager.instance.openTask(task);
@@ -195,13 +210,16 @@ class _HomePageState extends State<HomePage> {
                           child: TaskCellWidget(
                             key: UniqueKey(),
                             task: toDoList[index],
-                            borderRadius: index == 0
+                            borderRadius: index == 0 ||
+                                    (_isFirstOfUncompleted(index) &&
+                                        !_showCompleted)
                                 ? const BorderRadius.vertical(
                                     bottom: Radius.circular(0.0),
                                     top: Radius.circular(8.0))
                                 : null,
                             checkBoxChanged: (value) {
-                              logger.l.d('Checkbox changed. Task done/restored');
+                              logger.l
+                                  .d('Checkbox changed. Task done/restored');
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
@@ -215,7 +233,8 @@ class _HomePageState extends State<HomePage> {
                                   toDoList[index].done = !toDoList[index].done;
                                 });
                                 _numOfCompleted();
-                                logger.l.d('Task ${toDoList[index].text} done/restored');
+                                logger.l.d(
+                                    'Task ${toDoList[index].text} done/restored');
                                 return false;
                               }
                               return dismissed;
@@ -236,9 +255,9 @@ class _HomePageState extends State<HomePage> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(
-                          top: toDoList.isNotEmpty
-                              ? const Radius.circular(0.0)
-                              : const Radius.circular(8.0),
+                          top: toDoList.isEmpty || (_allCompleted() && !_showCompleted)
+                              ? const Radius.circular(8.0)
+                              : const Radius.circular(0.0),
                           bottom: const Radius.circular(8.0),
                         ),
                         color: const Color.fromRGBO(255, 255, 255, 1),
