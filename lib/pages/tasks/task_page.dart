@@ -27,6 +27,7 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   void initState() {
+    logger.l.d('Task page opened');
     task = widget.task;
     isNewTask = task!.text == null;
     if (task!.date != null) {
@@ -74,11 +75,13 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _onGoBack() {
+    logger.l.d('Go back button pressed. Task page closing');
     NavigationManager.instance.pop(task);
   }
 
   void _onDelete() async {
     if (await _promptUser()) {
+      logger.l.d('Task page closing');
       NavigationManager.instance.pop(
         Task(),
       );
@@ -86,17 +89,21 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _onSave() {
+    logger.l.d('Save button pressed');
     if (textController!.text != '') {
+      logger.l.d('Task page closing');
       NavigationManager.instance.pop(
         Task(
             textController!.text, _dropdownValueToPriority(), task!.done, date),
       );
     } else {
+      logger.l.d('Task is empty');
       _onDelete();
     }
   }
 
   Future<bool> _promptUser() async {
+    logger.l.d('Asking for deletion/going back');
     return await showDialog<bool>(
           builder: (BuildContext context) {
             return AlertDialog(
@@ -110,6 +117,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   child: const Text('Cancel'),
                   onPressed: () {
+                    logger.l.d('Deletion/going back cancelled');
                     Navigator.of(context).pop(false);
                   },
                 ),
@@ -119,6 +127,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   child: const Text('Ok'),
                   onPressed: () {
+                    logger.l.d('Deletion/going back confirmed');
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -219,6 +228,7 @@ class _TaskPageState extends State<TaskPage> {
                     }).toList(),
                     onChanged: (String? value) {
                       setState(() {
+                        logger.l.d('Priority chosen');
                         dropdownValue = value!;
                       });
                     },
@@ -262,6 +272,7 @@ class _TaskPageState extends State<TaskPage> {
                   Switch(
                     value: _switch,
                     onChanged: (bool value) async {
+                      logger.l.d('Make by date switch changed');
                       setState(() {
                         _switch = value;
                       });
@@ -273,15 +284,18 @@ class _TaskPageState extends State<TaskPage> {
                           lastDate: DateTime(2101),
                         );
                         if (pickedDate != null) {
+                          logger.l.d('Date set');
                           setState(() {
                             date = pickedDate;
                           });
                         } else {
+                          logger.l.d('Date wasn\'t selected');
                           setState(() {
                             _switch = false;
                           });
                         }
                       } else {
+                        logger.l.d('Make by date turned off');
                         setState(() {
                           date = null;
                         });
@@ -298,6 +312,7 @@ class _TaskPageState extends State<TaskPage> {
                 onPressed: isNewTask!
                     ? null
                     : () {
+                        logger.l.d('Delete button pressed');
                         _onDelete();
                       },
                 icon: Icon(

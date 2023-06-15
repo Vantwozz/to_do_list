@@ -43,12 +43,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _numOfCompleted();
+    logger.l.d('Logger is working!');
     // TODO: implement initState
     super.initState();
   }
 
   Future<void> _onTaskOpen(int index, Task task) async {
+    logger.l.d('Info button pressed. Opening task page');
     final result = await NavigationManager.instance.openTask(task);
+    logger.l.d('Task page closed');
     if (result != null) {
       setState(() {
         if (result.text != null) {
@@ -61,7 +64,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _onTaskCreate() async {
+    logger.l.d('Creation button pressed. Opening task page');
     final result = await NavigationManager.instance.openTask(Task());
+    logger.l.d('Task page closed');
     if (result != null) {
       setState(() {
         if (result.text != null) {
@@ -98,8 +103,11 @@ class _HomePageState extends State<HomePage> {
             label: "Undo",
             textColor: Colors.yellow,
             onPressed: () {
-              setState(() => toDoList.insert(index, swiped));
+              setState(
+                () => toDoList.insert(index, swiped),
+              );
               _numOfCompleted();
+              logger.l.d('Element has been restored');
             }),
       );
       ScaffoldMessenger.of(context).showSnackBar(s);
@@ -120,20 +128,16 @@ class _HomePageState extends State<HomePage> {
               content: Text('Are you sure you want to $action?'),
               actions: <Widget>[
                 TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
-                  ),
                   child: const Text('Cancel'),
                   onPressed: () {
+                    logger.l.d('Deletion cancelled');
                     Navigator.of(context).pop(false);
                   },
                 ),
                 TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge,
-                  ),
                   child: const Text('Ok'),
                   onPressed: () {
+                    logger.l.d('Deletion confirmed');
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -157,6 +161,7 @@ class _HomePageState extends State<HomePage> {
             completed: completed,
             onEyePressed: () {
               setState(() {
+                logger.l.d('Eye button pressed. Shown/hidden completed tasks');
                 _showCompleted = !_showCompleted;
               });
             },
@@ -196,6 +201,7 @@ class _HomePageState extends State<HomePage> {
                                     top: Radius.circular(8.0))
                                 : null,
                             checkBoxChanged: (value) {
+                              logger.l.d('Checkbox changed. Task done/restored');
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
@@ -209,11 +215,13 @@ class _HomePageState extends State<HomePage> {
                                   toDoList[index].done = !toDoList[index].done;
                                 });
                                 _numOfCompleted();
+                                logger.l.d('Task ${toDoList[index].text} done/restored');
                                 return false;
                               }
                               return dismissed;
                             },
                             onDismissed: (direction) {
+                              logger.l.d('Dismiss confirmed');
                               _handleDismiss(direction, index);
                               _numOfCompleted();
                             },
@@ -237,6 +245,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: TextButton(
                         onPressed: () {
+                          logger.l.d('Pressed \'add\' button in list');
                           _onTaskCreate();
                         },
                         style: TextButton.styleFrom(
@@ -268,6 +277,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          logger.l.d('Pressed floating button');
           _onTaskCreate();
         },
         child: const Icon(Icons.add),
