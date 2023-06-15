@@ -25,7 +25,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return SliverAppBar(
       pinned: true,
       backgroundColor: const Color(0xFFF7F6F2),
-      collapsedHeight: 70,
+      collapsedHeight: 80,
       expandedHeight: 200,
       automaticallyImplyLeading: false,
       flexibleSpace: LayoutBuilder(
