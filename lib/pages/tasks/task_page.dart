@@ -161,7 +161,10 @@ class _TaskPageState extends State<TaskPage> {
                 },
                 child: const Text(
                   'Save',
-                  style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
+                  style: TextStyle(
+                    color: Color(0xFF007AFF),
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
@@ -197,7 +200,10 @@ class _TaskPageState extends State<TaskPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Priority', style: TextStyle(fontSize: 16)),
+                  const Text(
+                    'Priority',
+                    style: TextStyle(fontSize: 16),
+                  ),
                   DropdownButton<String>(
                     selectedItemBuilder: (BuildContext context) {
                       return priorityList.map<Widget>((String item) {

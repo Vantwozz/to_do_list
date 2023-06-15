@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class TaskCellWidget extends StatefulWidget {
   const TaskCellWidget({
@@ -163,7 +162,7 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
