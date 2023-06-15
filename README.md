@@ -16,7 +16,7 @@
 
 ## Ссылка на загрузку .apk:
 
-[Скачать](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Скачать](https://drive.google.com/file/d/1yIggX6nc0BUpoAKkcbTTVbpaEwfh5e8B/view?usp=sharing)
 
 ## Демонстация внешнего вида приложения:
 
