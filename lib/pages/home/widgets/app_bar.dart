@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-int paddingConst = 88545359;//constant that used for calculating padding
+int paddingConst = 88545359; //constants that used for calculating padding
+double secondPaddingConst = 233 / 37;
 
 class CustomAppBar extends StatefulWidget {
   const CustomAppBar({
@@ -41,7 +42,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                     const Row(
+                    const Row(
                       children: [
                         SizedBox(
                           width: 40,
@@ -98,8 +99,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 37,
+                SizedBox(
+                  height: top / secondPaddingConst,
                 ),
               ],
             ),
