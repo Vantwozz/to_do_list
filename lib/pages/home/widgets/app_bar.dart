@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+int paddingConst = 88545359;//constant that used for calculating padding
 
 class CustomAppBar extends StatefulWidget {
   const CustomAppBar({
@@ -21,8 +25,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return SliverAppBar(
       pinned: true,
       backgroundColor: const Color(0xFFF7F6F2),
-      collapsedHeight: 80,
-      expandedHeight: 164,
+      collapsedHeight: 70,
+      expandedHeight: 200,
       automaticallyImplyLeading: false,
       flexibleSpace: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -37,7 +41,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Row(
+                     const Row(
                       children: [
                         SizedBox(
                           width: 40,
@@ -49,9 +53,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       ],
                     ),
                     Visibility(
-                      //visible: top > 150,
                       child: SizedBox(
-                        height: top / 20,
+                        height: pow(top, 4) / paddingConst,
                       ),
                     ),
                   ],
@@ -96,7 +99,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ],
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 37,
                 ),
               ],
             ),
