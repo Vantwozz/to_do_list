@@ -142,31 +142,32 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFf7f6f2),
-        leading: CloseButton(
-          onPressed: () {
-            _onGoBack();
-          },
-          color: Colors.black,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _onSave();
-            },
-            child: const Text(
-              'Save',
-              style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
+      body: CustomScrollView(
+        controller: ScrollController(),
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: const Color(0xFFf7f6f2),
+            leading: CloseButton(
+              onPressed: () {
+                _onGoBack();
+              },
+              color: Colors.black,
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _onSave();
+                },
+                child: const Text(
+                  'Save',
+                  style: TextStyle(color: Color(0xFF007AFF), fontSize: 14),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.all(16),
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
@@ -189,7 +190,9 @@ class _TaskPageState extends State<TaskPage> {
                 ),
               ),
             ),
-            Padding(
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 0, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +247,9 @@ class _TaskPageState extends State<TaskPage> {
                 ],
               ),
             ),
-            Padding(
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               child: Row(
                 children: [
@@ -305,8 +310,12 @@ class _TaskPageState extends State<TaskPage> {
                 ],
               ),
             ),
-            const Divider(color: Color.fromRGBO(0, 0, 0, 0.2)),
-            Padding(
+          ),
+          const SliverToBoxAdapter(
+            child: Divider(color: Color.fromRGBO(0, 0, 0, 0.2)),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.only(left: 15),
               child: TextButton.icon(
                 onPressed: isNewTask!
@@ -331,9 +340,9 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                 ),
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
       backgroundColor: const Color(0xFFf7f6f2),
     );
