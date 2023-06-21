@@ -9,7 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
-./lib/utils/token.dart
+lib/utils/token.dart
 
 # IntelliJ related
 *.iml
