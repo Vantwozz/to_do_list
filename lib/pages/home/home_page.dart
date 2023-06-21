@@ -3,6 +3,7 @@ import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/pages/home/widgets/app_bar.dart';
+import 'package:to_do_list/network/network_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,30 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Task> toDoList = [
-    Task('something 1', Priority.none, false),
-    Task(
-        'another task loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
-        Priority.low,
-        true,
-        DateTime.now()),
-    Task('something 2', Priority.none, false),
-    Task('something 3', Priority.none, false),
-    Task('something 4', Priority.none, false),
-    Task('something 5', Priority.none, false),
-    Task('something 6', Priority.none, false),
-    Task('something 7', Priority.high, false),
-    Task('something 8', Priority.none, false),
-    Task('something 9', Priority.none, false),
-    Task('something 10', Priority.none, false),
-    Task('something 11', Priority.none, false),
-    Task('something 12', Priority.none, false),
-    Task('something 13', Priority.none, false),
-    Task('something 14', Priority.none, false),
-    Task('something 15', Priority.none, false),
-    Task('something 16', Priority.none, false),
-    Task('something 17', Priority.none, false),
-  ];
+  List<Task> toDoList = [];
 
   int completed = 0;
   bool _showCompleted = true;
@@ -80,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _onTaskCreate() async {
     logger.l.d('Creation button pressed. Opening task page');
-    final result = await NavigationManager.instance.openTask(Task());
+    final result = await NavigationManager.instance.openTask(Task(NetworkManager.manager.generateUuid()));
     logger.l.d('Task page closed');
     if (result != null) {
       setState(() {
