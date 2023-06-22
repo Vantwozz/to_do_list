@@ -23,11 +23,11 @@ class AdvancedTask {
   String id;
   String text;
   String importance;
-  Long? deadline;
-  Bool done;
+  int? deadline;
+  bool done;
   String? color;
-  Long createdAt;
-  Long changedAt;
+  int createdAt;
+  int changedAt;
   String lastUpdatedBy;
 
   AdvancedTask({
@@ -41,4 +41,19 @@ class AdvancedTask {
     required this.changedAt,
     required this.lastUpdatedBy,
   });
+
+  factory AdvancedTask.fromJson(dynamic json) {
+    return AdvancedTask(
+      id: json['id'],
+      text: json['text'],
+      importance: json['importance'],
+      deadline: json.containsKey('deadline') ? json['deadline'] : null,
+      done: json['done'],
+      color: json.containsKey('color') ? json['color'] : null,
+      createdAt: json['created_at'],
+      changedAt: json['changed_at'],
+      lastUpdatedBy: json['last_updated_by'],
+    );
+  }
 }
+

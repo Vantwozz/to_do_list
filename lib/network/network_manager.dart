@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:to_do_list/utils/token.dart';
 
-class NetworkManager{
-  NetworkManager._(this._token);
+class NetworkManager {
+  NetworkManager._(this._token) {
+    _dio.options.headers["Authorization"] = "Bearer $_token";
+  }
+
   int? _revision;
   final String _token;
+  final _dio = Dio();
 
   final String _url = ' https://beta.mrdekk.ru/todobackend/list';
 
@@ -15,15 +19,24 @@ class NetworkManager{
 
   static final manager = NetworkManager._(token);
 
-  String generateUuid(){
+  String generateUuid() {
     return _uuid.v4();
   }
 
-  List<Task> getFullList() async {
-    final response = await http.get(
-      Uri.parse('https://beta.mrdekk.ru/todobackend/list'),
-      headers: {"Authorization": "Bearer $_token"},
+  Future<List<AdvancedTask>> getFullList() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      'https://beta.mrdekk.ru/todobackend/list',
     );
-    return;
+    List<AdvancedTask> ans = [];
+    if (response.statusCode == 200) {
+      Map<String, dynamic>? data = response.data;
+      if (data != null) {
+        List<Map<String, dynamic>> list = data['list'];
+        for (int i = 0; i < list.length; i++) {
+          ans.add(AdvancedTask.fromJson(list[i]));
+        }
+      }
+    }
+    return ans;
   }
 }
