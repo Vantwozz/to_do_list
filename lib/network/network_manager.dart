@@ -7,17 +7,21 @@ import 'package:to_do_list/utils/token.dart';
 class NetworkManager {
   NetworkManager._(this._token) {
     _dio.options.headers["Authorization"] = "Bearer $_token";
-    getRevision();
+    _Revision();
+  }
+
+  void _Revision()async{
+    await getRevision();
   }
 
   int? _revision;
   final String _token;
   final _dio = Dio();
-  final String _url = ' https://beta.mrdekk.ru/todobackend/list';
+  final String _url = 'https://beta.mrdekk.ru/todobackend/list';
   final _uuid = const Uuid();
   static final manager = NetworkManager._(token);
 
-  void getRevision() async {
+  Future<void> getRevision() async {
     final response = await _dio.get(_url);
     _revision = response.data["revision"];
   }
@@ -80,7 +84,6 @@ class NetworkManager {
     if (task.date == null) {
       data["element"]!.remove("deadline");
     }
-    print(data);
     final response = await _dio.post(
       _url,
       data: data,
@@ -132,7 +135,6 @@ class NetworkManager {
     if (task.deadline == null) {
       data["element"]!.remove("deadline");
     }
-    print(data);
     final response = await _dio.put(
       '$_url/${task.id}',
       data: data,

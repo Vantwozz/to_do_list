@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
 import 'package:to_do_list/utils/utils.dart';
@@ -20,10 +21,51 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    initList();
     _numOfCompleted();
     logger.l.d('Logger is working!');
     // TODO: implement initState
     super.initState();
+  }
+
+  void initList() async {
+    await getList();
+    _numOfCompleted();
+  }
+
+  Future<void> getList() async {
+    List<AdvancedTask> advTasks = await NetworkManager.manager.getFullList();
+    for (int i = 0; i < advTasks.length; i++) {
+      toDoList.add(
+        Task(
+          advTasks[i].id,
+          advTasks[i].text,
+          getPriority(advTasks[i].importance),
+          advTasks[i].done,
+          advTasks[i].deadline != null
+              ? DateTime.fromMillisecondsSinceEpoch(advTasks[i].deadline!)
+              : null,
+        ),
+      );
+    }
+  }
+
+  Priority getPriority(String importance) {
+    Priority ans;
+    switch (importance) {
+      case 'basic':
+        ans = Priority.none;
+        break;
+      case 'low':
+        ans = Priority.low;
+        break;
+      case 'important':
+        ans = Priority.high;
+        break;
+      default:
+        ans = Priority.none;
+    }
+    return ans;
   }
 
   bool _isFirstOfUncompleted(int index) {
@@ -37,7 +79,7 @@ class _HomePageState extends State<HomePage> {
     return (i == index);
   }
 
-  bool _allCompleted(){
+  bool _allCompleted() {
     return (completed == toDoList.length);
   }
 
@@ -46,24 +88,31 @@ class _HomePageState extends State<HomePage> {
     final result = await NavigationManager.instance.openTask(task);
     logger.l.d('Task page closed');
     if (result != null) {
-      setState(() {
         if (result.text != null) {
-          toDoList[index] = result;
+          setState(() {
+            toDoList[index] = result;
+          });
+          await NetworkManager.manager.changeTask(result);
         } else {
-          toDoList.removeAt(index);
+          String id = toDoList[index].id;
+          setState(() {
+            toDoList.removeAt(index);
+          });
+          await NetworkManager.manager.deleteTaskById(id);
         }
-      });
     }
   }
 
   Future<void> _onTaskCreate() async {
     logger.l.d('Creation button pressed. Opening task page');
-    final result = await NavigationManager.instance.openTask(Task(NetworkManager.manager.generateUuid()));
+    final result = await NavigationManager.instance
+        .openTask(Task(NetworkManager.manager.generateUuid()));
     logger.l.d('Task page closed');
     if (result != null) {
       setState(() {
         if (result.text != null) {
           toDoList.add(result);
+          NetworkManager.manager.createTask(result);
         }
       });
     }
@@ -81,7 +130,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> _handleDismiss(DismissDirection direction, int index) async {
+  /*Future<void> _handleDismiss(DismissDirection direction, int index) async {
     final swiped = toDoList[index];
     String action;
     if (direction == DismissDirection.endToStart) {
@@ -95,17 +144,18 @@ class _HomePageState extends State<HomePage> {
         action: SnackBarAction(
             label: "Undo",
             textColor: Colors.yellow,
-            onPressed: () {
+            onPressed: () async {
               setState(
                 () => toDoList.insert(index, swiped),
               );
               _numOfCompleted();
               logger.l.d('Element has been restored');
+              await NetworkManager.manager.createTask(swiped);
             }),
       );
       ScaffoldMessenger.of(context).showSnackBar(s);
     }
-  }
+  }*/
 
   Future<bool> _promptUser(direction) async {
     String action;
@@ -195,12 +245,14 @@ class _HomePageState extends State<HomePage> {
                                     bottom: Radius.circular(0.0),
                                     top: Radius.circular(8.0))
                                 : null,
-                            checkBoxChanged: (value) {
+                            checkBoxChanged: (value) async {
                               logger.l
                                   .d('Checkbox changed. Task done/restored');
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
+                              await NetworkManager.manager
+                                  .changeTask(toDoList[index]);
                               _numOfCompleted();
                             },
                             confirmDismiss: (direction) async {
@@ -210,6 +262,8 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   toDoList[index].done = !toDoList[index].done;
                                 });
+                                await NetworkManager.manager
+                                    .changeTask(toDoList[index]);
                                 _numOfCompleted();
                                 logger.l.d(
                                     'Task ${toDoList[index].text} done/restored');
@@ -217,10 +271,15 @@ class _HomePageState extends State<HomePage> {
                               }
                               return dismissed;
                             },
-                            onDismissed: (direction) {
+                            onDismissed: (direction) async {
+                              String id = toDoList[index].id;
                               logger.l.d('Dismiss confirmed');
-                              _handleDismiss(direction, index);
-                              _numOfCompleted();
+                              setState(() {
+                                toDoList.removeAt(index);
+                                _numOfCompleted();
+                              });
+                              await NetworkManager.manager.deleteTaskById(id);
+                              //await _handleDismiss(direction, index);
                             },
                             onInfoPressed: () =>
                                 _onTaskOpen(index, toDoList[index]),
@@ -233,7 +292,8 @@ class _HomePageState extends State<HomePage> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(
-                          top: toDoList.isEmpty || (_allCompleted() && !_showCompleted)
+                          top: toDoList.isEmpty ||
+                                  (_allCompleted() && !_showCompleted)
                               ? const Radius.circular(8.0)
                               : const Radius.circular(0.0),
                           bottom: const Radius.circular(8.0),
