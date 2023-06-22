@@ -83,7 +83,7 @@ class _TaskPageState extends State<TaskPage> {
     if (await _promptUser()) {
       logger.l.d('Task page closing');
       NavigationManager.instance.pop(
-        Task(),
+        Task(task!.id),
       );
     }
   }
@@ -94,7 +94,12 @@ class _TaskPageState extends State<TaskPage> {
       logger.l.d('Task page closing');
       NavigationManager.instance.pop(
         Task(
-            textController!.text, _dropdownValueToPriority(), task!.done, date),
+          task!.id,
+          textController!.text,
+          _dropdownValueToPriority(),
+          task!.done,
+          date,
+        ),
       );
     } else {
       logger.l.d('Task is empty');

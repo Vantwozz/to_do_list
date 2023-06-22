@@ -2,7 +2,11 @@ import 'dart:ffi';
 
 import 'package:logger/logger.dart';
 
-enum Priority { none, low, high }
+enum Priority {
+  none,
+  low,
+  high,
+}
 
 class Task {
   String id;
@@ -56,4 +60,3 @@ class AdvancedTask {
     );
   }
 }
-
