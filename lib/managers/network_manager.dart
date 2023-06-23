@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:to_do_list/utils/token.dart';
 
 class NetworkManager {
-  NetworkManager._(this._token) {
+  NetworkManager(this._token) {
     _dio.options.headers["Authorization"] = "Bearer $_token";
     _Revision();
   }
@@ -19,7 +19,6 @@ class NetworkManager {
   final _dio = Dio();
   final String _url = 'https://beta.mrdekk.ru/todobackend/list';
   final _uuid = const Uuid();
-  static final manager = NetworkManager._(token);
 
   Future<void> getRevision() async {
     final response = await _dio.get(_url);

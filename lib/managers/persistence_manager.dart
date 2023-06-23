@@ -73,4 +73,12 @@ class PersistenceManager {
     final item = await db.rawQuery('SELECT * FROM $_tableName WHERE id = \'$id\'');
     return item.map((item) => AdvancedTask.fromJson(item)).toList()[0];    //return AdvancedTask.fromJson(item);
   }
+
+  Future<void> updateList({required List<AdvancedTask> list}) async {
+    final db = await _databaseGetter;
+    db.rawDelete('DELETE FROM $_tableName');
+    for(int i = 0; i<list.length; i++){
+      await insertTask(task: list[i]);
+    }
+  }
 }
