@@ -4,7 +4,7 @@ import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/pages/home/widgets/app_bar.dart';
-import 'package:to_do_list/network/network_manager.dart';
+import 'package:to_do_list/managers/network_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

@@ -52,7 +52,9 @@ class AdvancedTask {
       text: json['text'],
       importance: json['importance'],
       deadline: json.containsKey('deadline') ? json['deadline'] : null,
-      done: json['done'],
+      done: json['done'].runtimeType == bool
+          ? json['done']
+          : (json['done'] == 1 ? true : false),
       color: json.containsKey('color') ? json['color'] : null,
       createdAt: json['created_at'],
       changedAt: json['changed_at'],
