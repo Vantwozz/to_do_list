@@ -20,7 +20,7 @@ class NetworkManager {
   int? _revision;
   final String _token;
   final _dio = Dio();
-  final String _url = 'https://beta.mrdekk.ru/todobackend/list';
+  final String _url = url;
 
   Future<void> getRevision() async {
     final response = await _dio.get(_url);
