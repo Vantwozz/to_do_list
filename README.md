@@ -18,4 +18,5 @@
 
 [Скачать](https://drive.google.com/file/d/1yIggX6nc0BUpoAKkcbTTVbpaEwfh5e8B/view?usp=sharing)
 
-## Демонстация внешнего вида приложения:
+## Демонстация внешнего вида приложения(новый элемент ui только один, больше показать нечего):
+![app5](https://github.com/Vantwozz/to_do_list/assets/95244485/a8e83bdc-598d-4b25-bdad-48e974494883)
