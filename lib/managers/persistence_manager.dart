@@ -41,24 +41,24 @@ class PersistenceManager {
       "done": task.done ? 1 : 0,
       "deadline": task.deadline,
       "color": "#FFFFFF",
-      "created_at": task.createdAt,
+      "created_at": DateTime.now().millisecondsSinceEpoch.toInt(),
       "changed_at": DateTime.now().millisecondsSinceEpoch.toInt(),
       "last_updated_by": "1"
     };
     if (task.deadline == null) {
       data.remove("deadline");
     }
-    db.insert(_tableName, data);
+    await db.insert(_tableName, data);
   }
 
-  Future<void> deleteTask({required String id})async {
+  Future<void> deleteTask({required String id}) async {
     final db = await _databaseGetter;
-    db.rawDelete('DELETE FROM $_tableName WHERE id = \'$id\'');
+    await db.rawDelete('DELETE FROM $_tableName WHERE id = \'$id\'');
   }
 
-  Future<void> updateTask({required AdvancedTask task})async{
+  Future<void> updateTask({required AdvancedTask task}) async {
     final db = await _databaseGetter;
-    db.rawUpdate('UPDATE $_tableName SET text = \'${task.text}\', '
+    await db.rawUpdate('UPDATE $_tableName SET text = \'${task.text}\', '
         'importance = \'${task.importance}\', '
         'done = ${task.done ? 1 : 0}, '
         'deadline = ${task.deadline}, '
@@ -68,17 +68,34 @@ class PersistenceManager {
         'WHERE id = \'${task.id}\'');
   }
 
-  Future<AdvancedTask> getTask ({required String id})async{
+  Future<AdvancedTask> getTask({required String id}) async {
     final db = await _databaseGetter;
-    final item = await db.rawQuery('SELECT * FROM $_tableName WHERE id = \'$id\'');
-    return item.map((item) => AdvancedTask.fromJson(item)).toList()[0];    //return AdvancedTask.fromJson(item);
+    final item =
+        await db.rawQuery('SELECT * FROM $_tableName WHERE id = \'$id\'');
+    return item
+        .map((item) => AdvancedTask.fromJson(item))
+        .toList()[0]; //return AdvancedTask.fromJson(item);
   }
 
   Future<void> updateList({required List<AdvancedTask> list}) async {
     final db = await _databaseGetter;
-    db.rawDelete('DELETE FROM $_tableName');
-    for(int i = 0; i<list.length; i++){
-      await insertTask(task: list[i]);
+    await db.rawDelete('DELETE FROM $_tableName');
+    for (int i = 0; i < list.length; i++) {
+      var data = {
+        "id": list[i].id,
+        "text": list[i].text,
+        "importance": list[i].importance,
+        "done": list[i].done ? 1 : 0,
+        "deadline": list[i].deadline,
+        "color": "#FFFFFF",
+        "created_at": list[i].createdAt,
+        "changed_at": list[i].changedAt,
+        "last_updated_by": "1",
+      };
+      if (list[i].deadline == null) {
+        data.remove("deadline");
+      }
+      await db.insert(_tableName, data);
     }
   }
 }

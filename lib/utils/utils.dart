@@ -61,4 +61,17 @@ class AdvancedTask {
       lastUpdatedBy: json['last_updated_by'],
     );
   }
+
+  @override
+  bool operator ==(other) {
+    return other is AdvancedTask &&
+        (id == other.id &&
+            text == other.text &&
+            importance == other.importance &&
+            deadline == other.deadline &&
+            done == other.done &&
+            color == other.color &&
+            createdAt == other.createdAt &&
+            lastUpdatedBy == other.lastUpdatedBy);
+  }
 }

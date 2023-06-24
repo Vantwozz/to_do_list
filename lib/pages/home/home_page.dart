@@ -4,7 +4,7 @@ import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/pages/home/widgets/app_bar.dart';
-import 'package:to_do_list/managers/network_manager.dart';
+import 'package:to_do_list/managers/data_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,12 +29,69 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initList() async {
+    await synchronizeLists();
     await getList();
     _numOfCompleted();
   }
 
+  Future<void> synchronizeLists() async {
+    bool connected = await DataManager.manager.checkConnection();
+    if (!connected) {
+      const s = SnackBar(
+        content: Text("Can't connect to backend"),
+        duration: Duration(seconds: 3),
+      );
+      return;
+    } else {
+      if (await DataManager.manager.equalLists()) {
+        print("equal");
+        return;
+      } else {
+        await _showMyDialog();
+      }
+    }
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Synchronize lists!'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Lists on backend and in local storage are not synchronized'),
+                Text('How do you want to fix it?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Download list from backend'),
+              onPressed: () async {
+                await DataManager.manager.downloadToLocal();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Download list from local storage'),
+              onPressed: () async {
+                await DataManager.manager.uploadFromLocal();
+                await DataManager.manager.downloadToLocal();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> getList() async {
-    List<AdvancedTask> advTasks = await NetworkManager.manager.getFullList();
+    List<AdvancedTask> advTasks = await DataManager.manager.getList();
     for (int i = 0; i < advTasks.length; i++) {
       toDoList.add(
         Task(
@@ -88,31 +145,31 @@ class _HomePageState extends State<HomePage> {
     final result = await NavigationManager.instance.openTask(task);
     logger.l.d('Task page closed');
     if (result != null) {
-        if (result.text != null) {
-          setState(() {
-            toDoList[index] = result;
-          });
-          await NetworkManager.manager.changeTask(result);
-        } else {
-          String id = toDoList[index].id;
-          setState(() {
-            toDoList.removeAt(index);
-          });
-          await NetworkManager.manager.deleteTaskById(id);
-        }
+      if (result.text != null) {
+        setState(() {
+          toDoList[index] = result;
+        });
+        await DataManager.manager.updateTask(result);
+      } else {
+        String id = toDoList[index].id;
+        setState(() {
+          toDoList.removeAt(index);
+        });
+        await DataManager.manager.deleteTaskById(id);
+      }
     }
   }
 
   Future<void> _onTaskCreate() async {
     logger.l.d('Creation button pressed. Opening task page');
     final result = await NavigationManager.instance
-        .openTask(Task(NetworkManager.manager.generateUuid()));
+        .openTask(Task(DataManager.manager.generateUuid()));
     logger.l.d('Task page closed');
     if (result != null) {
       setState(() {
         if (result.text != null) {
           toDoList.add(result);
-          NetworkManager.manager.createTask(result);
+          DataManager.manager.createTask(result);
         }
       });
     }
@@ -150,7 +207,7 @@ class _HomePageState extends State<HomePage> {
               );
               _numOfCompleted();
               logger.l.d('Element has been restored');
-              await NetworkManager.manager.createTask(swiped);
+              await DataManager.manager.createTask(swiped);
             }),
       );
       ScaffoldMessenger.of(context).showSnackBar(s);
@@ -251,8 +308,8 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
-                              await NetworkManager.manager
-                                  .changeTask(toDoList[index]);
+                              await DataManager.manager
+                                  .updateTask(toDoList[index]);
                               _numOfCompleted();
                             },
                             confirmDismiss: (direction) async {
@@ -262,8 +319,8 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   toDoList[index].done = !toDoList[index].done;
                                 });
-                                await NetworkManager.manager
-                                    .changeTask(toDoList[index]);
+                                await DataManager.manager
+                                    .updateTask(toDoList[index]);
                                 _numOfCompleted();
                                 logger.l.d(
                                     'Task ${toDoList[index].text} done/restored');
@@ -278,7 +335,7 @@ class _HomePageState extends State<HomePage> {
                                 toDoList.removeAt(index);
                                 _numOfCompleted();
                               });
-                              await NetworkManager.manager.deleteTaskById(id);
+                              await DataManager.manager.deleteTaskById(id);
                               //await _handleDismiss(direction, index);
                             },
                             onInfoPressed: () =>

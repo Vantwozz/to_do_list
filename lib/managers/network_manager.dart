@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:to_do_list/utils/utils.dart';
-import 'package:uuid/uuid.dart';
 import 'package:to_do_list/utils/token.dart';
 
 class NetworkManager {
@@ -10,7 +9,11 @@ class NetworkManager {
     _Revision();
   }
 
-  void _Revision()async{
+  Future<void> checkConnection() async {
+    await _dio.get(_url);
+  }
+
+  void _Revision() async {
     await getRevision();
   }
 
@@ -18,15 +21,10 @@ class NetworkManager {
   final String _token;
   final _dio = Dio();
   final String _url = 'https://beta.mrdekk.ru/todobackend/list';
-  final _uuid = const Uuid();
 
   Future<void> getRevision() async {
     final response = await _dio.get(_url);
     _revision = response.data["revision"];
-  }
-
-  String generateUuid() {
-    return _uuid.v4();
   }
 
   String getImportance(Priority pr) {
@@ -109,8 +107,7 @@ class NetworkManager {
 
   Future<bool> deleteTaskById(String id) async {
     _dio.options.headers["X-Last-Known-Revision"] = _revision;
-    final response =
-        await _dio.delete('$_url/$id');
+    final response = await _dio.delete('$_url/$id');
     _revision = _revision! + 1;
     _dio.options.headers.remove("X-Last-Known-Revision");
     return (response.statusCode == 200);
@@ -154,5 +151,43 @@ class NetworkManager {
       return saveTask(advTask);
     }
     return false;
+  }
+
+  Future<bool> patchList(List<AdvancedTask> list) async {
+    _dio.options.headers["X-Last-Known-Revision"] = _revision;
+    Map<String, dynamic> data = {"list": []};
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].deadline != null) {
+        data['list'].add({
+          "id": list[i].id,
+          "text": list[i].text,
+          "importance": list[i].importance,
+          "done": list[i].done,
+          "deadline": list[i].deadline,
+          "color": "#FFFFFF",
+          "created_at": list[i].createdAt,
+          "changed_at": DateTime.now().millisecondsSinceEpoch.toInt(),
+          "last_updated_by": "1"
+        });
+      } else {
+        data['list'].add({
+          "id": list[i].id,
+          "text": list[i].text,
+          "importance": list[i].importance,
+          "done": list[i].done,
+          "color": "#FFFFFF",
+          "created_at": list[i].createdAt,
+          "changed_at": DateTime.now().millisecondsSinceEpoch.toInt(),
+          "last_updated_by": "1"
+        });
+      }
+    }
+    final response = await _dio.patch(
+      'https://beta.mrdekk.ru/todobackend/list',
+      data: data,
+    );
+    _revision = _revision! + 1;
+    _dio.options.headers.remove("X-Last-Known-Revision");
+    return (response.statusCode == 200);
   }
 }
