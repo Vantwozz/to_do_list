@@ -41,10 +41,10 @@ class _HomePageState extends State<HomePage> {
         content: Text("Can't connect to backend"),
         duration: Duration(seconds: 3),
       );
+      ScaffoldMessenger.of(context).showSnackBar(s);
       return;
     } else {
       if (await DataManager.manager.equalLists()) {
-        print("equal");
         return;
       } else {
         await _showMyDialog();
@@ -155,6 +155,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           toDoList.removeAt(index);
         });
+        _numOfCompleted();
         await DataManager.manager.deleteTaskById(id);
       }
     }
