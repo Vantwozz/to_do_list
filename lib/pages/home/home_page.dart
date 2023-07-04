@@ -30,18 +30,14 @@ class _HomePageState extends State<HomePage> {
 
   void initList() async {
     await synchronizeLists();
-    await getList();
+    await _getList();
     _numOfCompleted();
   }
 
   Future<void> synchronizeLists() async {
-    bool connected = await DataManager.manager.checkConnection();
+    bool connected = await await DataManager.manager.checkConnection();
     if (!connected) {
-      const s = SnackBar(
-        content: Text("Can't connect to backend"),
-        duration: Duration(seconds: 3),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(s);
+      _showSnackBar();
       return;
     } else {
       if (await DataManager.manager.equalLists()) {
@@ -52,10 +48,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _showSnackBar() {
+    const s = SnackBar(
+      content: Text(
+          "Can't connect to backend. Everything is saving to local storage."),
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(s);
+  }
+
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Synchronize lists!'),
@@ -72,15 +77,21 @@ class _HomePageState extends State<HomePage> {
             TextButton(
               child: const Text('Download list from backend'),
               onPressed: () async {
-                await DataManager.manager.downloadToLocal();
+                if (!(await DataManager.manager.downloadToLocal())) {
+                  _showSnackBar();
+                }
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Download list from local storage'),
               onPressed: () async {
-                await DataManager.manager.uploadFromLocal();
-                await DataManager.manager.downloadToLocal();
+                if (!(await DataManager.manager.uploadFromLocal())) {
+                  _showSnackBar();
+                  await DataManager.manager.checkConnection();
+                } else {
+                  await DataManager.manager.downloadToLocal();
+                }
                 Navigator.of(context).pop();
               },
             ),
@@ -90,7 +101,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> getList() async {
+  Future<void> _getList() async {
     List<AdvancedTask> advTasks = await DataManager.manager.getList();
     for (int i = 0; i < advTasks.length; i++) {
       toDoList.add(
@@ -149,14 +160,20 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           toDoList[index] = result;
         });
-        await DataManager.manager.updateTask(result);
+        if (!(await DataManager.manager.updateTask(toDoList[index]))) {
+          await DataManager.manager.checkConnection();
+          _showSnackBar();
+        }
       } else {
         String id = toDoList[index].id;
         setState(() {
           toDoList.removeAt(index);
         });
         _numOfCompleted();
-        await DataManager.manager.deleteTaskById(id);
+        if (!(await DataManager.manager.deleteTaskById(id))) {
+          await DataManager.manager.checkConnection();
+          _showSnackBar();
+        }
       }
     }
   }
@@ -167,13 +184,15 @@ class _HomePageState extends State<HomePage> {
         .openTask(Task(DataManager.manager.generateUuid()));
     logger.l.d('Task page closed');
     if (result != null) {
-      setState(() {
-        if (result.text != null) {
-          toDoList.add(result);
-          DataManager.manager.createTask(result);
+      if (result.text != null) {
+        toDoList.add(result);
+        if (!(await DataManager.manager.createTask(result))) {
+          await DataManager.manager.checkConnection();
+          _showSnackBar();
         }
-      });
+      }
     }
+    setState(() {});
   }
 
   void _numOfCompleted() {
@@ -187,33 +206,6 @@ class _HomePageState extends State<HomePage> {
       completed = num;
     });
   }
-
-  /*Future<void> _handleDismiss(DismissDirection direction, int index) async {
-    final swiped = toDoList[index];
-    String action;
-    if (direction == DismissDirection.endToStart) {
-      action = "Deleted";
-      setState(() {
-        toDoList.removeAt(index);
-      });
-      final s = SnackBar(
-        content: Text("$action. Do you want to undo?"),
-        duration: const Duration(seconds: 3),
-        action: SnackBarAction(
-            label: "Undo",
-            textColor: Colors.yellow,
-            onPressed: () async {
-              setState(
-                () => toDoList.insert(index, swiped),
-              );
-              _numOfCompleted();
-              logger.l.d('Element has been restored');
-              await DataManager.manager.createTask(swiped);
-            }),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(s);
-    }
-  }*/
 
   Future<bool> _promptUser(direction) async {
     String action;
@@ -309,8 +301,11 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 toDoList[index].done = !toDoList[index].done;
                               });
-                              await DataManager.manager
-                                  .updateTask(toDoList[index]);
+                              if (!(await DataManager.manager
+                                  .updateTask(toDoList[index]))) {
+                                await DataManager.manager.checkConnection();
+                                _showSnackBar();
+                              }
                               _numOfCompleted();
                             },
                             confirmDismiss: (direction) async {
@@ -320,8 +315,11 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   toDoList[index].done = !toDoList[index].done;
                                 });
-                                await DataManager.manager
-                                    .updateTask(toDoList[index]);
+                                if (!(await DataManager.manager
+                                    .updateTask(toDoList[index]))) {
+                                  await DataManager.manager.checkConnection();
+                                  _showSnackBar();
+                                }
                                 _numOfCompleted();
                                 logger.l.d(
                                     'Task ${toDoList[index].text} done/restored');
@@ -336,8 +334,11 @@ class _HomePageState extends State<HomePage> {
                                 toDoList.removeAt(index);
                                 _numOfCompleted();
                               });
-                              await DataManager.manager.deleteTaskById(id);
-                              //await _handleDismiss(direction, index);
+                              if (!(await DataManager.manager
+                                  .deleteTaskById(id))) {
+                                await DataManager.manager.checkConnection();
+                                _showSnackBar();
+                              }
                             },
                             onInfoPressed: () =>
                                 _onTaskOpen(index, toDoList[index]),

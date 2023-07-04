@@ -60,16 +60,27 @@ class DataManager {
     }
   }
 
-  Future<void> deleteTaskById(String id) async {
+  Future<bool> deleteTaskById(String id) async {
+    bool ans = true;
     if (_connection!) {
-      await networkManager.deleteTaskById(id);
+      try {
+        await networkManager.deleteTaskById(id);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.deleteTask(id: id);
+    return ans;
   }
 
-  Future<void> createTask(Task task) async {
+  Future<bool> createTask(Task task) async {
+    bool ans = true;
     if (_connection!) {
-      await networkManager.createTask(task);
+      try {
+        await networkManager.createTask(task);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.insertTask(
       task: AdvancedTask(
@@ -86,11 +97,17 @@ class DataManager {
         lastUpdatedBy: "1",
       ),
     );
+    return ans;
   }
 
-  Future<void> updateTask(Task task) async {
+  Future<bool> updateTask(Task task) async {
+    bool ans = true;
     if (_connection!) {
-      await networkManager.changeTask(task);
+      try {
+        await networkManager.changeTask(task);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.updateTask(
       task: AdvancedTask(
@@ -107,14 +124,27 @@ class DataManager {
         lastUpdatedBy: "1",
       ),
     );
+    return ans;
   }
 
-  Future<void> uploadFromLocal() async {
-    await networkManager.patchList(await persistenceManager.getList());
+  Future<bool> uploadFromLocal() async {
+    bool ans = true;
+    try {
+      await networkManager.patchList(await persistenceManager.getList());
+    } catch (exception) {
+      ans = false;
+    }
+    return ans;
   }
 
-  Future<void> downloadToLocal() async {
-    await persistenceManager.updateList(
-        list: await networkManager.getFullList());
+  Future<bool> downloadToLocal() async {
+    bool ans = true;
+    try {
+      await persistenceManager.updateList(
+          list: await networkManager.getFullList());
+    } catch (exception) {
+      ans = false;
+    }
+    return ans;
   }
 }
