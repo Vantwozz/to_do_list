@@ -6,14 +6,14 @@ import 'package:to_do_list/utils/token.dart';
 class NetworkManager {
   NetworkManager(this._token) {
     _dio.options.headers["Authorization"] = "Bearer $_token";
-    _Revision();
+    _revisionGetter();
   }
 
   Future<void> checkConnection() async {
     await _dio.get(_url);
   }
 
-  void _Revision() async {
+  void _revisionGetter() async {
     await getRevision();
   }
 

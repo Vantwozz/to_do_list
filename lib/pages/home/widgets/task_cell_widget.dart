@@ -31,7 +31,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
 
   @override
   void initState() {
-    print(widget.task);
     // TODO: implement initState
     super.initState();
   }
@@ -48,7 +47,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
 
   TextSpan _getIconToShow() {
     TextSpan showIcon;
-    bool visible = false;
     switch (task!.priority) {
       case Priority.none:
         showIcon = const TextSpan();
@@ -65,7 +63,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
             ),
           ],
         );
-        visible = true;
         break;
       case Priority.high:
         showIcon = const TextSpan(
@@ -76,7 +73,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
             fontWeight: FontWeight.bold,
           ),
         );
-        visible = true;
         break;
     }
     return showIcon;

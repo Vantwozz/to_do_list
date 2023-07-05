@@ -82,7 +82,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                 if (!(await DataManager.manager.downloadToLocal())) {
                   _showSnackBar();
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
             TextButton(
@@ -94,7 +96,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                 } else {
                   await DataManager.manager.downloadToLocal();
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
