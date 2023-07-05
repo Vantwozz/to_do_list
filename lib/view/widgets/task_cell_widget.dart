@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:to_do_list/pages/home/home_page_providers.dart';
+import 'package:to_do_list/view/home_page_providers.dart';
 
 class TaskCellWidget extends ConsumerStatefulWidget {
   const TaskCellWidget({
@@ -31,7 +31,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
 
   @override
   void initState() {
-    print(widget.task);
     // TODO: implement initState
     super.initState();
   }
@@ -48,7 +47,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
 
   TextSpan _getIconToShow() {
     TextSpan showIcon;
-    bool visible = false;
     switch (task!.priority) {
       case Priority.none:
         showIcon = const TextSpan();
@@ -65,7 +63,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
             ),
           ],
         );
-        visible = true;
         break;
       case Priority.high:
         showIcon = const TextSpan(
@@ -76,7 +73,6 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
             fontWeight: FontWeight.bold,
           ),
         );
-        visible = true;
         break;
     }
     return showIcon;

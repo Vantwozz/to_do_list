@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/navigation/routes.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 
 class NavigationManager {
-  NavigationManager._();
-
-  static final instance = NavigationManager._();
+  NavigationManager();
 
   final key = GlobalKey<NavigatorState>();
 

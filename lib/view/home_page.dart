@@ -1,11 +1,12 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/view/widgets/task_cell_widget.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
-import 'package:to_do_list/pages/home/widgets/app_bar.dart';
-import 'package:to_do_list/managers/data_manager.dart';
+import 'package:to_do_list/view/widgets/app_bar.dart';
+import 'package:to_do_list/domain/data_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../locator.dart';
 import 'home_page_providers.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -37,12 +38,12 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> synchronizeLists() async {
-    bool connected = await DataManager.manager.checkConnection();
+    bool connected = await locator.get<DataManager>().checkConnection();
     if (!connected) {
       _showSnackBar();
       return;
     } else {
-      if (await DataManager.manager.equalLists()) {
+      if (await locator.get<DataManager>().equalLists()) {
         return;
       } else {
         await _showMyDialog();
@@ -79,22 +80,26 @@ class _HomePageState extends ConsumerState<HomePage> {
             TextButton(
               child: const Text('Download list from backend'),
               onPressed: () async {
-                if (!(await DataManager.manager.downloadToLocal())) {
+                if (!(await locator.get<DataManager>().downloadToLocal())) {
                   _showSnackBar();
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
             TextButton(
               child: const Text('Download list from local storage'),
               onPressed: () async {
-                if (!(await DataManager.manager.uploadFromLocal())) {
+                if (!(await locator.get<DataManager>().uploadFromLocal())) {
                   _showSnackBar();
-                  await DataManager.manager.checkConnection();
+                  await locator.get<DataManager>().checkConnection();
                 } else {
-                  await DataManager.manager.downloadToLocal();
+                  await locator.get<DataManager>().downloadToLocal();
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -104,7 +109,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> _getList() async {
-    List<AdvancedTask> advTasks = await DataManager.manager.getList();
+    List<AdvancedTask> advTasks = await locator.get<DataManager>().getList();
     for (int i = 0; i < advTasks.length; i++) {
       listProvider.add(
         StateProvider(
@@ -158,14 +163,14 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> _onTaskOpen(int index, Task task) async {
     logger.l.d('Info button pressed. Opening task page');
-    final result = await NavigationManager.instance.openTask(task);
+    final result = await locator.get<NavigationManager>().openTask(task);
     logger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
         ref.read(listProvider[index].notifier).update((state) => result);
-        if (!(await DataManager.manager
+        if (!(await locator.get<DataManager>()
             .updateTask(ref.read(listProvider[index])))) {
-          await DataManager.manager.checkConnection();
+          await locator.get<DataManager>().checkConnection();
           _showSnackBar();
         }
       } else {
@@ -173,8 +178,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         listProvider.removeAt(index);
         ref.read(length.notifier).update((state) => listProvider.length);
         _numOfCompleted();
-        if (!(await DataManager.manager.deleteTaskById(id))) {
-          await DataManager.manager.checkConnection();
+        if (!(await locator.get<DataManager>().deleteTaskById(id))) {
+          await locator.get<DataManager>().checkConnection();
           _showSnackBar();
         }
       }
@@ -183,15 +188,16 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> _onTaskCreate() async {
     logger.l.d('Creation button pressed. Opening task page');
-    final result = await NavigationManager.instance
-        .openTask(Task(DataManager.manager.generateUuid()));
+    final result = await locator
+        .get<NavigationManager>()
+        .openTask(Task(locator.get<DataManager>().generateUuid()));
     logger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
         listProvider.add(StateProvider((ref) => result));
         ref.read(length.notifier).update((state) => listProvider.length);
-        if (!(await DataManager.manager.createTask(result))) {
-          await DataManager.manager.checkConnection();
+        if (!(await locator.get<DataManager>().createTask(result))) {
+          await locator.get<DataManager>().checkConnection();
           _showSnackBar();
         }
       }
@@ -204,8 +210,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     listProvider.removeAt(index);
     ref.read(length.notifier).update((state) => listProvider.length);
     _numOfCompleted();
-    if (!(await DataManager.manager.deleteTaskById(id))) {
-      await DataManager.manager.checkConnection();
+    if (!(await locator.get<DataManager>().deleteTaskById(id))) {
+      await locator.get<DataManager>().checkConnection();
       _showSnackBar();
     }
   }
@@ -215,9 +221,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     if (dismissed && direction == DismissDirection.startToEnd) {
       Task newTask = _changeCompleted(ref.read(listProvider[index]));
       ref.read(listProvider[index].notifier).update((state) => newTask);
-      if (!(await DataManager.manager
+      if (!(await locator.get<DataManager>()
           .updateTask(ref.read(listProvider[index])))) {
-        await DataManager.manager.checkConnection();
+        await locator.get<DataManager>().checkConnection();
         _showSnackBar();
       }
       _numOfCompleted();
@@ -231,9 +237,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     logger.l.d('Checkbox changed. Task done/restored');
     Task newTask = _changeCompleted(ref.read(listProvider[index]));
     ref.read(listProvider[index].notifier).update((state) => newTask);
-    if (!(await DataManager.manager
+    if (!(await locator.get<DataManager>()
         .updateTask(ref.read(listProvider[index])))) {
-      await DataManager.manager.checkConnection();
+      await locator.get<DataManager>().checkConnection();
       _showSnackBar();
     }
     _numOfCompleted();

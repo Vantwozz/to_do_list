@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 
 List<StateProvider<Task>> listProvider = [];
 StateProvider<int> length = StateProvider((ref) => 0);

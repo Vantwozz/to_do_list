@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:intl/intl.dart';
+
+import '../locator.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({required this.task, Key? key}) : super(key: key);
@@ -76,15 +78,15 @@ class _TaskPageState extends State<TaskPage> {
 
   void _onGoBack() {
     logger.l.d('Go back button pressed. Task page closing');
-    NavigationManager.instance.pop(task);
+    locator.get<NavigationManager>().pop(task);
   }
 
   void _onDelete() async {
     if (await _promptUser()) {
       logger.l.d('Task page closing');
-      NavigationManager.instance.pop(
-        Task(task!.id),
-      );
+      locator.get<NavigationManager>().pop(
+            Task(task!.id),
+          );
     }
   }
 
@@ -92,15 +94,15 @@ class _TaskPageState extends State<TaskPage> {
     logger.l.d('Save button pressed');
     if (textController!.text != '') {
       logger.l.d('Task page closing');
-      NavigationManager.instance.pop(
-        Task(
-          task!.id,
-          textController!.text,
-          _dropdownValueToPriority(),
-          task!.done,
-          date,
-        ),
-      );
+      locator.get<NavigationManager>().pop(
+            Task(
+              task!.id,
+              textController!.text,
+              _dropdownValueToPriority(),
+              task!.done,
+              date,
+            ),
+          );
     } else {
       logger.l.d('Task is empty');
       _onDelete();
