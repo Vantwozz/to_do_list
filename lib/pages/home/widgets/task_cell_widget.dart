@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/utils/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:to_do_list/pages/home/home_page_providers.dart';
 
-class TaskCellWidget extends StatefulWidget {
+class TaskCellWidget extends ConsumerStatefulWidget {
   const TaskCellWidget({
     required this.task,
     this.borderRadius,
@@ -12,7 +14,8 @@ class TaskCellWidget extends StatefulWidget {
     required this.onInfoPressed,
     required Key? key,
   }) : super(key: key);
-  final Task task;
+  //final Task task;
+  final int task;
   final BorderRadius? borderRadius;
   final Function(bool? value) checkBoxChanged;
   final Function(DismissDirection direction) confirmDismiss;
@@ -20,15 +23,15 @@ class TaskCellWidget extends StatefulWidget {
   final Function() onInfoPressed;
 
   @override
-  State<TaskCellWidget> createState() => _TaskCellWidgetState();
+  ConsumerState<TaskCellWidget> createState() => _TaskCellWidgetState();
 }
 
-class _TaskCellWidgetState extends State<TaskCellWidget> {
+class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
   Task? task;
 
   @override
   void initState() {
-    task = widget.task;
+    print(widget.task);
     // TODO: implement initState
     super.initState();
   }
@@ -103,6 +106,7 @@ class _TaskCellWidgetState extends State<TaskCellWidget> {
 
   @override
   Widget build(BuildContext context) {
+    task = ref.watch(listProvider[widget.task]);
     return Dismissible(
       key: widget.key!,
       secondaryBackground: Container(
