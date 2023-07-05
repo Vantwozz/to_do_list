@@ -6,7 +6,7 @@ import 'package:to_do_list/repository/persistence_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class DataManager {
-  DataManager._();
+  DataManager();
 
   Future<bool> checkConnection() async {
     try {
@@ -19,7 +19,6 @@ class DataManager {
     }
   }
 
-  static final manager = DataManager._();
 
   final networkManager = NetworkManager(token);
   final persistenceManager = PersistenceManager();
