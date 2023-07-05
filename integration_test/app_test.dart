@@ -15,8 +15,8 @@ void main() async {
       await widgetTester.pumpAndSettle();
       await widgetTester.pumpAndSettle(const Duration(seconds: 3));
       await widgetTester.tap(find.text('Download list from backend').last);
-      await widgetTester.pumpAndSettle();
       await widgetTester.pumpAndSettle(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 1));
       await widgetTester.tap(find.text('Add').last);
       await widgetTester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 3));
