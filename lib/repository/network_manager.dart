@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:to_do_list/utils/utils.dart';
-import 'package:to_do_list/utils/token.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/token.dart';
 
 class NetworkManager {
   NetworkManager(this._token) {

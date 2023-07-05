@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
-import 'package:to_do_list/utils/token.dart';
-import 'package:to_do_list/managers/network_manager.dart';
-import 'package:to_do_list/managers/persistence_manager.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/token.dart';
+import 'package:to_do_list/repository/network_manager.dart';
+import 'package:to_do_list/repository/persistence_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class DataManager {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:to_do_list/pages/home/home_page_providers.dart';
+import 'package:to_do_list/view/home_page_providers.dart';
 
 class TaskCellWidget extends ConsumerStatefulWidget {
   const TaskCellWidget({

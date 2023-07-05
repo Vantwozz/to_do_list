@@ -1,10 +1,10 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/home/widgets/task_cell_widget.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/view/widgets/task_cell_widget.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
-import 'package:to_do_list/pages/home/widgets/app_bar.dart';
-import 'package:to_do_list/managers/data_manager.dart';
+import 'package:to_do_list/view/widgets/app_bar.dart';
+import 'package:to_do_list/domain/data_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'home_page_providers.dart';
 
