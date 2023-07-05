@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/token.dart';
 
 class NetworkManager {
-  NetworkManager(this._token) {
+  NetworkManager(this._token, this._dio) {
     _dio.options.headers["Authorization"] = "Bearer $_token";
     _revisionGetter();
   }
@@ -19,7 +18,7 @@ class NetworkManager {
 
   int? _revision;
   final String _token;
-  final _dio = Dio();
+  final Dio _dio;
   final String _url = url;
 
   Future<void> getRevision() async {
