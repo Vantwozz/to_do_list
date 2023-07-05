@@ -16,7 +16,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-
   @override
   void initState() {
     initList();
@@ -199,6 +198,47 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
+  Future<void> _onDismissed(int index) async {
+    String id = ref.read(listProvider[index]).id;
+    logger.l.d('Dismiss confirmed');
+    listProvider.removeAt(index);
+    ref.read(length.notifier).update((state) => listProvider.length);
+    _numOfCompleted();
+    if (!(await DataManager.manager.deleteTaskById(id))) {
+      await DataManager.manager.checkConnection();
+      _showSnackBar();
+    }
+  }
+
+  Future<bool> _confirmDismiss(DismissDirection direction, int index) async {
+    bool dismissed = await _promptUser(direction);
+    if (dismissed && direction == DismissDirection.startToEnd) {
+      Task newTask = _changeCompleted(ref.read(listProvider[index]));
+      ref.read(listProvider[index].notifier).update((state) => newTask);
+      if (!(await DataManager.manager
+          .updateTask(ref.read(listProvider[index])))) {
+        await DataManager.manager.checkConnection();
+        _showSnackBar();
+      }
+      _numOfCompleted();
+      logger.l.d('Task ${ref.read(listProvider[index]).text} done/restored');
+      return false;
+    }
+    return dismissed;
+  }
+
+  Future<void> _checkBoxChanged(int index) async {
+    logger.l.d('Checkbox changed. Task done/restored');
+    Task newTask = _changeCompleted(ref.read(listProvider[index]));
+    ref.read(listProvider[index].notifier).update((state) => newTask);
+    if (!(await DataManager.manager
+        .updateTask(ref.read(listProvider[index])))) {
+      await DataManager.manager.checkConnection();
+      _showSnackBar();
+    }
+    _numOfCompleted();
+  }
+
   void _numOfCompleted() {
     int num = 0;
     for (int i = 0; i < listProvider.length; i++) {
@@ -257,7 +297,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             completed: ref.watch(numOfCompleted),
             onEyePressed: () {
               logger.l.d('Eye button pressed. Shown/hidden completed tasks');
-              ref.read(showCompleted.notifier).update((state) => !ref.read(showCompleted));
+              ref
+                  .read(showCompleted.notifier)
+                  .update((state) => !ref.read(showCompleted));
               setState(() {});
             },
           ),
@@ -287,8 +329,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                       itemBuilder: (BuildContext context, int index) {
                         bool taskIsDone = ref.watch(listProvider[index]).done;
                         return Visibility(
-                          visible:
-                              !taskIsDone || (ref.watch(showCompleted) && taskIsDone),
+                          visible: !taskIsDone ||
+                              (ref.watch(showCompleted) && taskIsDone),
                           child: TaskCellWidget(
                             key: UniqueKey(),
                             task: index,
@@ -300,54 +342,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     top: Radius.circular(8.0))
                                 : null,
                             checkBoxChanged: (value) async {
-                              logger.l
-                                  .d('Checkbox changed. Task done/restored');
-                              Task newTask = _changeCompleted(
-                                  ref.read(listProvider[index]));
-                              ref
-                                  .read(listProvider[index].notifier)
-                                  .update((state) => newTask);
-                              if (!(await DataManager.manager
-                                  .updateTask(ref.read(listProvider[index])))) {
-                                await DataManager.manager.checkConnection();
-                                _showSnackBar();
-                              }
-                              _numOfCompleted();
+                              _checkBoxChanged(index);
                             },
                             confirmDismiss: (direction) async {
-                              bool dismissed = await _promptUser(direction);
-                              if (dismissed &&
-                                  direction == DismissDirection.startToEnd) {
-                                Task newTask = _changeCompleted(
-                                    ref.read(listProvider[index]));
-                                ref
-                                    .read(listProvider[index].notifier)
-                                    .update((state) => newTask);
-                                if (!(await DataManager.manager.updateTask(
-                                    ref.read(listProvider[index])))) {
-                                  await DataManager.manager.checkConnection();
-                                  _showSnackBar();
-                                }
-                                _numOfCompleted();
-                                logger.l.d(
-                                    'Task ${ref.read(listProvider[index]).text} done/restored');
-                                return false;
-                              }
-                              return dismissed;
+                              return _confirmDismiss(direction, index);
                             },
                             onDismissed: (direction) async {
-                              String id = ref.read(listProvider[index]).id;
-                              logger.l.d('Dismiss confirmed');
-                              listProvider.removeAt(index);
-                              ref
-                                  .read(length.notifier)
-                                  .update((state) => listProvider.length);
-                              _numOfCompleted();
-                              if (!(await DataManager.manager
-                                  .deleteTaskById(id))) {
-                                await DataManager.manager.checkConnection();
-                                _showSnackBar();
-                              }
+                              await _onDismissed(index);
                             },
                             onInfoPressed: () => _onTaskOpen(
                                 index, ref.read(listProvider[index])),

@@ -53,7 +53,7 @@ dev_dependencies:
   uuid: ^3.0.7
   sqflite: ^2.2.8+4
   path_provider: ^2.0.15
-  flutter_riverpod: ^2.3.6
+  flutter_riverpod: any
 
 
 # For information on the generic Dart part of this file, see the
