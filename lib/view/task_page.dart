@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
-import 'package:intl/intl.dart';
+import 'package:to_do_list/view/task_page_provider.dart';
 
 import '../locator.dart';
 
-class TaskPage extends StatefulWidget {
+class TaskPage extends ConsumerStatefulWidget {
   const TaskPage({required this.task, Key? key}) : super(key: key);
   final Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  ConsumerState<TaskPage> createState() => _TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskPageState extends ConsumerState<TaskPage> {
   Task? task;
   bool? isNewTask;
   String? taskName;
@@ -22,9 +24,7 @@ class _TaskPageState extends State<TaskPage> {
     'Low',
     '!!High',
   ];
-  bool _switch = false;
-  DateTime? date;
-  String? dropdownValue;
+
   TextEditingController? textController;
 
   @override
@@ -32,30 +32,41 @@ class _TaskPageState extends State<TaskPage> {
     logger.l.d('Task page opened');
     task = widget.task;
     isNewTask = task!.text == null;
-    if (task!.date != null) {
-      _switch = true;
-      date = task!.date;
-    }
-    switch (task!.priority) {
-      case Priority.none:
-        dropdownValue = priorityList[0];
-        break;
-      case Priority.low:
-        dropdownValue = priorityList[1];
-        break;
-      case Priority.high:
-        dropdownValue = priorityList[2];
-        break;
-    }
+    _initTask();
     taskName = task!.text;
     textController = TextEditingController(text: taskName);
     // TODO: implement initState
     super.initState();
   }
 
+  Future<void> _initTask() async {
+    await Future.delayed(const Duration(microseconds: 10) );
+    if (task!.date != null) {
+      ref.read(switchProvider.notifier).update((state) => true);
+      ref.read(dateProvider.notifier).update((state) => task!.date);
+    }
+    switch (task!.priority) {
+      case Priority.none:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[0]);
+        break;
+      case Priority.low:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[1]);
+        break;
+      case Priority.high:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[2]);
+        break;
+    }
+  }
+
   Priority _dropdownValueToPriority() {
     Priority? pr;
-    switch (dropdownValue) {
+    switch (ref.read(dropdownValueProvider)) {
       case 'None':
         pr = Priority.none;
         break;
@@ -100,7 +111,7 @@ class _TaskPageState extends State<TaskPage> {
               textController!.text,
               _dropdownValueToPriority(),
               task!.done,
-              date,
+              ref.read(dateProvider),
             ),
           );
     } else {
@@ -243,12 +254,12 @@ class _TaskPageState extends State<TaskPage> {
                       );
                     }).toList(),
                     onChanged: (String? value) {
-                      setState(() {
-                        logger.l.d('Priority chosen');
-                        dropdownValue = value!;
-                      });
+                      logger.l.d('Priority chosen');
+                      ref
+                          .read(dropdownValueProvider.notifier)
+                          .update((state) => value!);
                     },
-                    value: dropdownValue,
+                    value: ref.watch(dropdownValueProvider),
                     icon: const Visibility(
                       visible: false,
                       child: Icon(
@@ -276,8 +287,9 @@ class _TaskPageState extends State<TaskPage> {
                         ),
                       ),
                       Text(
-                        date != null
-                            ? DateFormat('yyyy-MM-dd').format(date!)
+                        ref.watch(dateProvider) != null
+                            ? DateFormat('yyyy-MM-dd')
+                                .format(ref.watch(dateProvider)!)
                             : '',
                         style: const TextStyle(
                           fontSize: 14,
@@ -288,12 +300,12 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   const Spacer(),
                   Switch(
-                    value: _switch,
+                    value: ref.watch(switchProvider),
                     onChanged: (bool value) async {
                       logger.l.d('Make by date switch changed');
-                      setState(() {
-                        _switch = value;
-                      });
+                      ref
+                          .read(switchProvider.notifier)
+                          .update((state) => value);
                       if (value) {
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
@@ -303,20 +315,18 @@ class _TaskPageState extends State<TaskPage> {
                         );
                         if (pickedDate != null) {
                           logger.l.d('Date set');
-                          setState(() {
-                            date = pickedDate;
-                          });
+                          ref
+                              .read(dateProvider.notifier)
+                              .update((state) => pickedDate);
                         } else {
                           logger.l.d('Date wasn\'t selected');
-                          setState(() {
-                            _switch = false;
-                          });
+                          ref
+                              .read(switchProvider.notifier)
+                              .update((state) => false);
                         }
                       } else {
                         logger.l.d('Make by date turned off');
-                        setState(() {
-                          date = null;
-                        });
+                        ref.read(dateProvider.notifier).update((state) => null);
                       }
                     },
                   ),
