@@ -40,10 +40,10 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   }
 
   Future<void> _initTask() async {
-    await Future.delayed(const Duration(microseconds: 10) );
+    await Future.delayed(const Duration(microseconds: 1));
     if (task!.date != null) {
-      ref.read(switchProvider.notifier).update((state) => true);
       ref.read(dateProvider.notifier).update((state) => task!.date);
+      ref.read(switchProvider.notifier).update((state) => true);
     }
     switch (task!.priority) {
       case Priority.none:
