@@ -5,19 +5,17 @@ import 'package:to_do_list/utils/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/pages/home/widgets/app_bar.dart';
 import 'package:to_do_list/managers/data_manager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'home_page_providers.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  List<Task> toDoList = [];
-
-  int completed = 0;
-  bool _showCompleted = true;
+class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   void initState() {
@@ -28,6 +26,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  Task _changeCompleted(Task task) {
+    task.done = !task.done;
+    return task;
+  }
+
   void initList() async {
     await synchronizeLists();
     await _getList();
@@ -35,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> synchronizeLists() async {
-    bool connected = await await DataManager.manager.checkConnection();
+    bool connected = await DataManager.manager.checkConnection();
     if (!connected) {
       _showSnackBar();
       return;
@@ -104,17 +107,20 @@ class _HomePageState extends State<HomePage> {
   Future<void> _getList() async {
     List<AdvancedTask> advTasks = await DataManager.manager.getList();
     for (int i = 0; i < advTasks.length; i++) {
-      toDoList.add(
-        Task(
-          advTasks[i].id,
-          advTasks[i].text,
-          getPriority(advTasks[i].importance),
-          advTasks[i].done,
-          advTasks[i].deadline != null
-              ? DateTime.fromMillisecondsSinceEpoch(advTasks[i].deadline!)
-              : null,
+      listProvider.add(
+        StateProvider(
+          (ref) => Task(
+            advTasks[i].id,
+            advTasks[i].text,
+            getPriority(advTasks[i].importance),
+            advTasks[i].done,
+            advTasks[i].deadline != null
+                ? DateTime.fromMillisecondsSinceEpoch(advTasks[i].deadline!)
+                : null,
+          ),
         ),
       );
+      ref.read(length.notifier).update((state) => listProvider.length);
     }
   }
 
@@ -138,8 +144,8 @@ class _HomePageState extends State<HomePage> {
 
   bool _isFirstOfUncompleted(int index) {
     int i = 0;
-    while (i < toDoList.length) {
-      if (!toDoList[i].done) {
+    while (i < listProvider.length) {
+      if (!ref.read(listProvider[i]).done) {
         break;
       }
       i++;
@@ -148,7 +154,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool _allCompleted() {
-    return (completed == toDoList.length);
+    return (ref.read(numOfCompleted) == listProvider.length);
   }
 
   Future<void> _onTaskOpen(int index, Task task) async {
@@ -157,18 +163,16 @@ class _HomePageState extends State<HomePage> {
     logger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
-        setState(() {
-          toDoList[index] = result;
-        });
-        if (!(await DataManager.manager.updateTask(toDoList[index]))) {
+        ref.read(listProvider[index].notifier).update((state) => result);
+        if (!(await DataManager.manager
+            .updateTask(ref.read(listProvider[index])))) {
           await DataManager.manager.checkConnection();
           _showSnackBar();
         }
       } else {
-        String id = toDoList[index].id;
-        setState(() {
-          toDoList.removeAt(index);
-        });
+        String id = ref.read(listProvider[index]).id;
+        listProvider.removeAt(index);
+        ref.read(length.notifier).update((state) => listProvider.length);
         _numOfCompleted();
         if (!(await DataManager.manager.deleteTaskById(id))) {
           await DataManager.manager.checkConnection();
@@ -185,26 +189,24 @@ class _HomePageState extends State<HomePage> {
     logger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
-        toDoList.add(result);
+        listProvider.add(StateProvider((ref) => result));
+        ref.read(length.notifier).update((state) => listProvider.length);
         if (!(await DataManager.manager.createTask(result))) {
           await DataManager.manager.checkConnection();
           _showSnackBar();
         }
       }
     }
-    setState(() {});
   }
 
   void _numOfCompleted() {
     int num = 0;
-    for (int i = 0; i < toDoList.length; i++) {
-      if (toDoList[i].done) {
+    for (int i = 0; i < listProvider.length; i++) {
+      if (ref.read(listProvider[i]).done) {
         num++;
       }
     }
-    setState(() {
-      completed = num;
-    });
+    ref.read(numOfCompleted.notifier).update((state) => num);
   }
 
   Future<bool> _promptUser(direction) async {
@@ -244,19 +246,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var itemCount = ref.watch(length);
     return Scaffold(
       backgroundColor: const Color(0xFFF7F6F2),
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
           CustomAppBar(
-            showCompleted: _showCompleted,
-            completed: completed,
+            showCompleted: ref.watch(showCompleted),
+            completed: ref.watch(numOfCompleted),
             onEyePressed: () {
-              setState(() {
-                logger.l.d('Eye button pressed. Shown/hidden completed tasks');
-                _showCompleted = !_showCompleted;
-              });
+              logger.l.d('Eye button pressed. Shown/hidden completed tasks');
+              ref.read(showCompleted.notifier).update((state) => !ref.read(showCompleted));
+              setState(() {});
             },
           ),
           SliverToBoxAdapter(
@@ -281,16 +283,18 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.only(top: 0),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
+                      itemCount: itemCount,
                       itemBuilder: (BuildContext context, int index) {
+                        bool taskIsDone = ref.watch(listProvider[index]).done;
                         return Visibility(
-                          visible: !toDoList[index].done ||
-                              (_showCompleted && toDoList[index].done),
+                          visible:
+                              !taskIsDone || (ref.watch(showCompleted) && taskIsDone),
                           child: TaskCellWidget(
                             key: UniqueKey(),
-                            task: toDoList[index],
+                            task: index,
                             borderRadius: index == 0 ||
                                     (_isFirstOfUncompleted(index) &&
-                                        !_showCompleted)
+                                        !ref.watch(showCompleted))
                                 ? const BorderRadius.vertical(
                                     bottom: Radius.circular(0.0),
                                     top: Radius.circular(8.0))
@@ -298,11 +302,13 @@ class _HomePageState extends State<HomePage> {
                             checkBoxChanged: (value) async {
                               logger.l
                                   .d('Checkbox changed. Task done/restored');
-                              setState(() {
-                                toDoList[index].done = !toDoList[index].done;
-                              });
+                              Task newTask = _changeCompleted(
+                                  ref.read(listProvider[index]));
+                              ref
+                                  .read(listProvider[index].notifier)
+                                  .update((state) => newTask);
                               if (!(await DataManager.manager
-                                  .updateTask(toDoList[index]))) {
+                                  .updateTask(ref.read(listProvider[index])))) {
                                 await DataManager.manager.checkConnection();
                                 _showSnackBar();
                               }
@@ -312,47 +318,49 @@ class _HomePageState extends State<HomePage> {
                               bool dismissed = await _promptUser(direction);
                               if (dismissed &&
                                   direction == DismissDirection.startToEnd) {
-                                setState(() {
-                                  toDoList[index].done = !toDoList[index].done;
-                                });
-                                if (!(await DataManager.manager
-                                    .updateTask(toDoList[index]))) {
+                                Task newTask = _changeCompleted(
+                                    ref.read(listProvider[index]));
+                                ref
+                                    .read(listProvider[index].notifier)
+                                    .update((state) => newTask);
+                                if (!(await DataManager.manager.updateTask(
+                                    ref.read(listProvider[index])))) {
                                   await DataManager.manager.checkConnection();
                                   _showSnackBar();
                                 }
                                 _numOfCompleted();
                                 logger.l.d(
-                                    'Task ${toDoList[index].text} done/restored');
+                                    'Task ${ref.read(listProvider[index]).text} done/restored');
                                 return false;
                               }
                               return dismissed;
                             },
                             onDismissed: (direction) async {
-                              String id = toDoList[index].id;
+                              String id = ref.read(listProvider[index]).id;
                               logger.l.d('Dismiss confirmed');
-                              setState(() {
-                                toDoList.removeAt(index);
-                                _numOfCompleted();
-                              });
+                              listProvider.removeAt(index);
+                              ref
+                                  .read(length.notifier)
+                                  .update((state) => listProvider.length);
+                              _numOfCompleted();
                               if (!(await DataManager.manager
                                   .deleteTaskById(id))) {
                                 await DataManager.manager.checkConnection();
                                 _showSnackBar();
                               }
                             },
-                            onInfoPressed: () =>
-                                _onTaskOpen(index, toDoList[index]),
+                            onInfoPressed: () => _onTaskOpen(
+                                index, ref.read(listProvider[index])),
                           ),
                         );
                       },
-                      itemCount: toDoList.length,
                     ),
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(
-                          top: toDoList.isEmpty ||
-                                  (_allCompleted() && !_showCompleted)
+                          top: listProvider.isEmpty ||
+                                  (_allCompleted() && !ref.watch(showCompleted))
                               ? const Radius.circular(8.0)
                               : const Radius.circular(0.0),
                           bottom: const Radius.circular(8.0),
