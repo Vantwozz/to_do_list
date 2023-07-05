@@ -195,7 +195,7 @@ void main() {
   group(
     'Delete task by id',
     () {
-      void setData(){
+      void setData() {
         when(() => mockPersistenceManager.deleteTask(id: '1'))
             .thenAnswer((invocation) async => true);
         when(() => mockNetworkManager.deleteTaskById('1'))
@@ -204,7 +204,7 @@ void main() {
 
       test(
         'Get From Network',
-            () async {
+        () async {
           setData();
           expect(await sut.deleteTaskById('1'), true);
         },
@@ -212,10 +212,66 @@ void main() {
 
       test(
         'Get From Persistence',
-            () async {
+        () async {
           setData();
           connectionFalse();
           expect(await sut.deleteTaskById('1'), true);
+        },
+      );
+    },
+  );
+
+  group(
+    'Synchronize lists',
+    () {
+      final List<AdvancedTask> listFromPersistence = [
+        AdvancedTask(
+          id: 'id',
+          text: 'text',
+          importance: 'low',
+          done: false,
+          createdAt: 1,
+          changedAt: 1,
+          lastUpdatedBy: '1',
+        ),
+      ];
+
+      final List<AdvancedTask> listFromNetwork = [
+        AdvancedTask(
+          id: 'id2',
+          text: 'text2',
+          importance: 'low',
+          done: false,
+          createdAt: 2,
+          changedAt: 2,
+          lastUpdatedBy: '2',
+        ),
+      ];
+
+      void setData() {
+        when(() => mockPersistenceManager.getList())
+            .thenAnswer((invocation) async => listFromPersistence);
+        when(() => mockNetworkManager.getFullList())
+            .thenAnswer((invocation) async => listFromNetwork);
+        when(() => mockPersistenceManager.updateList(list: listFromNetwork))
+            .thenAnswer((invocation) async {});
+        when(() => mockNetworkManager.patchList(listFromPersistence))
+            .thenAnswer((invocation) async => true);
+      }
+
+      test(
+        'Download to local',
+        () async {
+          setData();
+          expect(await sut.downloadToLocal(), true);
+        },
+      );
+
+      test(
+        'Upload to back-end',
+        () async {
+          setData();
+          expect(await sut.uploadFromLocal(), true);
         },
       );
     },
