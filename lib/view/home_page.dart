@@ -21,7 +21,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     initList();
     _numOfCompleted();
-    logger.l.d('Logger is working!');
+    MyLogger.l.d('Logger is working!');
     // TODO: implement initState
     super.initState();
   }
@@ -162,9 +162,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> _onTaskOpen(int index, Task task) async {
-    logger.l.d('Info button pressed. Opening task page');
+    MyLogger.l.d('Info button pressed. Opening task page');
     final result = await locator.get<NavigationManager>().openTask(task);
-    logger.l.d('Task page closed');
+    MyLogger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
         ref.read(listProvider[index].notifier).update((state) => result);
@@ -187,11 +187,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> _onTaskCreate() async {
-    logger.l.d('Creation button pressed. Opening task page');
+    MyLogger.l.d('Creation button pressed. Opening task page');
     final result = await locator
         .get<NavigationManager>()
         .openTask(Task(locator.get<DataManager>().generateUuid()));
-    logger.l.d('Task page closed');
+    MyLogger.l.d('Task page closed');
     if (result != null) {
       if (result.text != null) {
         listProvider.add(StateProvider((ref) => result));
@@ -206,7 +206,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> _onDismissed(int index) async {
     String id = ref.read(listProvider[index]).id;
-    logger.l.d('Dismiss confirmed');
+    MyLogger.l.d('Dismiss confirmed');
     listProvider.removeAt(index);
     ref.read(length.notifier).update((state) => listProvider.length);
     _numOfCompleted();
@@ -227,14 +227,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         _showSnackBar();
       }
       _numOfCompleted();
-      logger.l.d('Task ${ref.read(listProvider[index]).text} done/restored');
+      MyLogger.l.d('Task ${ref.read(listProvider[index]).text} done/restored');
       return false;
     }
     return dismissed;
   }
 
   Future<void> _checkBoxChanged(int index) async {
-    logger.l.d('Checkbox changed. Task done/restored');
+    MyLogger.l.d('Checkbox changed. Task done/restored');
     Task newTask = _changeCompleted(ref.read(listProvider[index]));
     ref.read(listProvider[index].notifier).update((state) => newTask);
     if (!(await locator.get<DataManager>()
@@ -271,14 +271,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 TextButton(
                   child: const Text('Cancel'),
                   onPressed: () {
-                    logger.l.d('Deletion cancelled');
+                    MyLogger.l.d('Deletion cancelled');
                     Navigator.of(context).pop(false);
                   },
                 ),
                 TextButton(
                   child: const Text('Ok'),
                   onPressed: () {
-                    logger.l.d('Deletion confirmed');
+                    MyLogger.l.d('Deletion confirmed');
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -302,7 +302,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             showCompleted: ref.watch(showCompleted),
             completed: ref.watch(numOfCompleted),
             onEyePressed: () {
-              logger.l.d('Eye button pressed. Shown/hidden completed tasks');
+              MyLogger.l.d('Eye button pressed. Shown/hidden completed tasks');
               ref
                   .read(showCompleted.notifier)
                   .update((state) => !ref.read(showCompleted));
@@ -376,7 +376,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          logger.l.d('Pressed \'add\' button in list');
+                          MyLogger.l.d('Pressed \'add\' button in list');
                           _onTaskCreate();
                         },
                         style: TextButton.styleFrom(
@@ -408,7 +408,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          logger.l.d('Pressed floating button');
+          MyLogger.l.d('Pressed floating button');
           _onTaskCreate();
         },
         child: const Icon(Icons.add),

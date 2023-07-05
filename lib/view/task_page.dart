@@ -29,7 +29,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
 
   @override
   void initState() {
-    logger.l.d('Task page opened');
+    MyLogger.l.d('Task page opened');
     task = widget.task;
     isNewTask = task!.text == null;
     _initTask();
@@ -88,13 +88,13 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   }
 
   void _onGoBack() {
-    logger.l.d('Go back button pressed. Task page closing');
+    MyLogger.l.d('Go back button pressed. Task page closing');
     locator.get<NavigationManager>().pop(task);
   }
 
   void _onDelete() async {
     if (await _promptUser()) {
-      logger.l.d('Task page closing');
+      MyLogger.l.d('Task page closing');
       locator.get<NavigationManager>().pop(
             Task(task!.id),
           );
@@ -102,9 +102,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   }
 
   void _onSave() {
-    logger.l.d('Save button pressed');
+    MyLogger.l.d('Save button pressed');
     if (textController!.text != '') {
-      logger.l.d('Task page closing');
+      MyLogger.l.d('Task page closing');
       locator.get<NavigationManager>().pop(
             Task(
               task!.id,
@@ -115,13 +115,13 @@ class _TaskPageState extends ConsumerState<TaskPage> {
             ),
           );
     } else {
-      logger.l.d('Task is empty');
+      MyLogger.l.d('Task is empty');
       _onDelete();
     }
   }
 
   Future<bool> _promptUser() async {
-    logger.l.d('Asking for deletion/going back');
+    MyLogger.l.d('Asking for deletion/going back');
     return await showDialog<bool>(
           builder: (BuildContext context) {
             return AlertDialog(
@@ -135,7 +135,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                   ),
                   child: const Text('Cancel'),
                   onPressed: () {
-                    logger.l.d('Deletion/going back cancelled');
+                    MyLogger.l.d('Deletion/going back cancelled');
                     Navigator.of(context).pop(false);
                   },
                 ),
@@ -145,7 +145,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                   ),
                   child: const Text('Ok'),
                   onPressed: () {
-                    logger.l.d('Deletion/going back confirmed');
+                    MyLogger.l.d('Deletion/going back confirmed');
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -254,7 +254,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                       );
                     }).toList(),
                     onChanged: (String? value) {
-                      logger.l.d('Priority chosen');
+                      MyLogger.l.d('Priority chosen');
                       ref
                           .read(dropdownValueProvider.notifier)
                           .update((state) => value!);
@@ -302,7 +302,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                   Switch(
                     value: ref.watch(switchProvider),
                     onChanged: (bool value) async {
-                      logger.l.d('Make by date switch changed');
+                      MyLogger.l.d('Make by date switch changed');
                       ref
                           .read(switchProvider.notifier)
                           .update((state) => value);
@@ -314,18 +314,18 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                           lastDate: DateTime(2101),
                         );
                         if (pickedDate != null) {
-                          logger.l.d('Date set');
+                          MyLogger.l.d('Date set');
                           ref
                               .read(dateProvider.notifier)
                               .update((state) => pickedDate);
                         } else {
-                          logger.l.d('Date wasn\'t selected');
+                          MyLogger.l.d('Date wasn\'t selected');
                           ref
                               .read(switchProvider.notifier)
                               .update((state) => false);
                         }
                       } else {
-                        logger.l.d('Make by date turned off');
+                        MyLogger.l.d('Make by date turned off');
                         ref.read(dateProvider.notifier).update((state) => null);
                       }
                     },
@@ -344,7 +344,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                 onPressed: isNewTask!
                     ? null
                     : () {
-                        logger.l.d('Delete button pressed');
+                        MyLogger.l.d('Delete button pressed');
                         _onDelete();
                       },
                 icon: Icon(

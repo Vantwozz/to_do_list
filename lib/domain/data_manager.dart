@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:to_do_list/domain/utils.dart';
-import 'package:to_do_list/token.dart';
 import 'package:to_do_list/repository/network_manager.dart';
 import 'package:to_do_list/repository/persistence_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class DataManager {
-  DataManager();
+  DataManager(this.networkManager, this.persistenceManager);
 
   Future<bool> checkConnection() async {
     try {
@@ -19,10 +17,9 @@ class DataManager {
     }
   }
 
-
-  final networkManager = NetworkManager(token);
-  final persistenceManager = PersistenceManager();
-  bool? _connection;
+  NetworkManager networkManager; // = NetworkManager(token);
+  PersistenceManager persistenceManager; // = PersistenceManager();
+  bool _connection = true;
   final _uuid = const Uuid();
 
   Future<bool> equalLists() async {
@@ -44,7 +41,7 @@ class DataManager {
   }
 
   Future<List<AdvancedTask>> getList() async {
-    if (_connection!) {
+    if (_connection) {
       return await networkManager.getFullList();
     } else {
       return await persistenceManager.getList();
@@ -52,7 +49,7 @@ class DataManager {
   }
 
   Future<AdvancedTask?> getTaskById(String id) async {
-    if (_connection!) {
+    if (_connection) {
       return await networkManager.getTaskById(id);
     } else {
       return await persistenceManager.getTask(id: id);
@@ -61,7 +58,7 @@ class DataManager {
 
   Future<bool> deleteTaskById(String id) async {
     bool ans = true;
-    if (_connection!) {
+    if (_connection) {
       try {
         await networkManager.deleteTaskById(id);
       } catch (exception) {
@@ -74,7 +71,7 @@ class DataManager {
 
   Future<bool> createTask(Task task) async {
     bool ans = true;
-    if (_connection!) {
+    if (_connection) {
       try {
         await networkManager.createTask(task);
       } catch (exception) {
@@ -101,7 +98,7 @@ class DataManager {
 
   Future<bool> updateTask(Task task) async {
     bool ans = true;
-    if (_connection!) {
+    if (_connection) {
       try {
         await networkManager.changeTask(task);
       } catch (exception) {
