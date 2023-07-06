@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/navigation/routes.dart';
 import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/navigation/routes.dart';
 
 class NavigationManager {
   NavigationManager();
@@ -24,4 +24,3 @@ class NavigationManager {
     _navigator.popUntil(ModalRoute.withName(RouteNames.home));
   }
 }
-
