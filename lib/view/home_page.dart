@@ -1,11 +1,13 @@
 import 'dart:core';
+
 import 'package:flutter/material.dart';
-import 'package:to_do_list/view/widgets/task_cell_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:to_do_list/domain/data_manager.dart';
 import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/view/widgets/app_bar.dart';
-import 'package:to_do_list/domain/data_manager.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:to_do_list/view/widgets/task_cell_widget.dart';
+
 import '../locator.dart';
 import 'home_page_providers.dart';
 
@@ -168,7 +170,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     if (result != null) {
       if (result.text != null) {
         ref.read(listProvider[index].notifier).update((state) => result);
-        if (!(await locator.get<DataManager>()
+        if (!(await locator
+            .get<DataManager>()
             .updateTask(ref.read(listProvider[index])))) {
           await locator.get<DataManager>().checkConnection();
           _showSnackBar();
@@ -221,7 +224,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     if (dismissed && direction == DismissDirection.startToEnd) {
       Task newTask = _changeCompleted(ref.read(listProvider[index]));
       ref.read(listProvider[index].notifier).update((state) => newTask);
-      if (!(await locator.get<DataManager>()
+      if (!(await locator
+          .get<DataManager>()
           .updateTask(ref.read(listProvider[index])))) {
         await locator.get<DataManager>().checkConnection();
         _showSnackBar();
@@ -237,7 +241,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     MyLogger.l.d('Checkbox changed. Task done/restored');
     Task newTask = _changeCompleted(ref.read(listProvider[index]));
     ref.read(listProvider[index].notifier).update((state) => newTask);
-    if (!(await locator.get<DataManager>()
+    if (!(await locator
+        .get<DataManager>()
         .updateTask(ref.read(listProvider[index])))) {
       await locator.get<DataManager>().checkConnection();
       _showSnackBar();

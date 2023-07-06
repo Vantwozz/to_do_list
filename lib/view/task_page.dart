@@ -319,7 +319,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                               .read(dateProvider.notifier)
                               .update((state) => pickedDate);
                         } else {
-                          MyLogger.l.d('Date wasn\'t selected');
+                          MyLogger.l.d("Date wasn't selected");
                           ref
                               .read(switchProvider.notifier)
                               .update((state) => false);

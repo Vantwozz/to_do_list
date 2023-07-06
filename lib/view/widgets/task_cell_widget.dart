@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/domain/utils.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:to_do_list/domain/utils.dart';
 import 'package:to_do_list/view/home_page_providers.dart';
 
 class TaskCellWidget extends ConsumerStatefulWidget {
@@ -14,6 +14,7 @@ class TaskCellWidget extends ConsumerStatefulWidget {
     required this.onInfoPressed,
     required Key? key,
   }) : super(key: key);
+
   //final Task task;
   final int task;
   final BorderRadius? borderRadius;
