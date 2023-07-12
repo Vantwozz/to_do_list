@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 int paddingConst = 88545359; //constants that used for calculating padding
