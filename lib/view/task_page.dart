@@ -32,8 +32,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   void initState() {
     MyLogger.l.d('Task page opened');
     locator.get<FirebaseAnalytics>().logEvent(
-      name: 'Task page opened',
-    );
+          name: 'Task page opened',
+        );
     task = widget.task;
     isNewTask = task!.text == null;
     _initTask();

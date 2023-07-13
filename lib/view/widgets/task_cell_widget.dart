@@ -157,7 +157,10 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
                                 ? DateFormat('yyyy-MM-dd').format(task!.date!)
                                 : '',
                             style: TextStyle(
-                                color: Theme.of(context).textTheme.bodySmall!.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .color,
                                 fontSize: 14),
                           ),
                         ),

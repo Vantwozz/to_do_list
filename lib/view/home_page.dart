@@ -169,8 +169,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     final result = await locator.get<NavigationManager>().openTask(task);
     MyLogger.l.d('Task page closed');
     locator.get<FirebaseAnalytics>().logEvent(
-      name: 'Task page closed',
-    );
+          name: 'Task page closed',
+        );
     if (result != null) {
       if (result.text != null) {
         ref.read(listProvider[index].notifier).update((state) => result);
@@ -195,8 +195,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> _onTaskCreate() async {
     locator.get<FirebaseAnalytics>().logEvent(
-      name: 'Creating task',
-    );
+          name: 'Creating task',
+        );
     MyLogger.l.d('Creation button pressed. Opening task page');
     final result = await locator
         .get<NavigationManager>()
@@ -292,8 +292,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   onPressed: () {
                     MyLogger.l.d('Deletion confirmed');
                     locator.get<FirebaseAnalytics>().logEvent(
-                      name: 'Deletion confirmed',
-                    );
+                          name: 'Deletion confirmed',
+                        );
                     Navigator.of(context).pop(true);
                   },
                 ),

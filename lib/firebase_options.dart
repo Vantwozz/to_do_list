@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '552232142127',
     projectId: 'to-do-list-1800e',
     storageBucket: 'to-do-list-1800e.appspot.com',
-    iosClientId: '552232142127-ep1atfsvofames0kiom21nh4qfdfak5p.apps.googleusercontent.com',
+    iosClientId:
+        '552232142127-ep1atfsvofames0kiom21nh4qfdfak5p.apps.googleusercontent.com',
     iosBundleId: 'com.example.toDoList',
   );
 }
