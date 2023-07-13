@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   @override
   void initState() {
     MyLogger.l.d('Task page opened');
+    locator.get<FirebaseAnalytics>().logEvent(
+      name: 'Task page opened',
+    );
     task = widget.task;
     isNewTask = task!.text == null;
     _initTask();
