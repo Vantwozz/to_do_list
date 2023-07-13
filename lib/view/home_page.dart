@@ -298,7 +298,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     var itemCount = ref.watch(length);
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F6F2),
+      backgroundColor: Theme.of(context).primaryColor,
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
@@ -376,28 +376,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                               : const Radius.circular(0.0),
                           bottom: const Radius.circular(8.0),
                         ),
-                        color: const Color.fromRGBO(255, 255, 255, 1),
+                        color: Theme.of(context).canvasColor,
                       ),
                       child: TextButton(
                         onPressed: () {
                           MyLogger.l.d('Pressed \'add\' button in list');
                           _onTaskCreate();
                         },
-                        style: TextButton.styleFrom(
+                        /*style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
-                        ),
-                        child: const Row(
+                        ),*/
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 40,
                             ),
                             Text(
                               'Add',
-                              style: TextStyle(
-                                color: Color.fromRGBO(0, 0, 0, 0.3),
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
                             ),
                           ],
                         ),

@@ -165,22 +165,26 @@ class _TaskPageState extends ConsumerState<TaskPage> {
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
-            backgroundColor: const Color(0xFFf7f6f2),
+            backgroundColor: Theme.of(context).primaryColor,
             leading: CloseButton(
               onPressed: () {
                 _onGoBack();
               },
-              color: Colors.black,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
             ),
             actions: [
               TextButton(
                 onPressed: () {
                   _onSave();
                 },
-                child: const Text(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                      Theme.of(context).primaryColor),
+                ),
+                child: Text(
                   'Save',
                   style: TextStyle(
-                    color: Color(0xFF007AFF),
+                    color: Theme.of(context).iconTheme.color,
                     fontSize: 14,
                   ),
                 ),
@@ -201,7 +205,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                     ),
                     hintText: 'Task to do',
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).canvasColor,
                   ),
                   autofocus: false,
                   maxLines: null,
@@ -291,9 +295,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                             ? DateFormat('yyyy-MM-dd')
                                 .format(ref.watch(dateProvider)!)
                             : '',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF007AFF),
+                          color: Theme.of(context).iconTheme.color,
                         ),
                       ),
                     ],
@@ -301,6 +305,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                   const Spacer(),
                   Switch(
                     value: ref.watch(switchProvider),
+                    activeColor: Theme.of(context).iconTheme.color,
                     onChanged: (bool value) async {
                       MyLogger.l.d('Make by date switch changed');
                       ref
@@ -335,7 +340,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
             ),
           ),
           const SliverToBoxAdapter(
-            child: Divider(color: Color.fromRGBO(0, 0, 0, 0.2)),
+            child: Divider(),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -362,12 +367,16 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                         : const Color(0xFFFF3B30),
                   ),
                 ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                      Theme.of(context).primaryColor),
+                ),
               ),
             ),
           ),
         ],
       ),
-      backgroundColor: const Color(0xFFf7f6f2),
+      backgroundColor: Theme.of(context).primaryColor,
     );
   }
 }

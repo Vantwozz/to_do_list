@@ -24,7 +24,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: const Color(0xFFF7F6F2),
+      //backgroundColor: const Color(0xFFF7F6F2),
       collapsedHeight: 80,
       expandedHeight: 200,
       automaticallyImplyLeading: false,
@@ -41,14 +41,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 40,
                         ),
                         Text(
                           'My tasks',
-                          style: TextStyle(fontSize: 32, color: Colors.black),
+                          style: Theme.of(context).textTheme.headlineLarge,
                         ),
                       ],
                     ),
@@ -67,7 +67,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         !widget.showCompleted
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: const Color.fromRGBO(0, 122, 255, 1),
+                        //color: const Color.fromRGBO(0, 122, 255, 1),
                         size: 19,
                       ),
                       onPressed: () {
@@ -91,10 +91,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     Text(
                       "Completed - ${widget.completed}",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Color.fromRGBO(0, 0, 0, 0.3),
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
                 ),
