@@ -21,6 +21,12 @@ ThemeData lightTheme = ThemeData(
       fontSize: 16,
       color: Color.fromRGBO(0, 0, 0, 0.3),
     ),
+    headlineMedium: TextStyle(
+      color: Color(0xFFFF3B30),
+    ),
+    titleSmall: TextStyle(
+      color: Color.fromRGBO(0, 0, 0, 0.15),
+    ),
   ),
   canvasColor: const Color.fromRGBO(255, 255, 255, 1),
   dividerColor: const Color.fromRGBO(0, 0, 0, 0.1),
@@ -46,6 +52,12 @@ ThemeData darkTheme = ThemeData(
     headlineSmall: TextStyle(
       fontSize: 16,
       color: Color.fromRGBO(255, 255, 255, 0.4),
+    ),
+    headlineMedium: TextStyle(
+      color: Color(0xFFFF453A),
+    ),
+    titleSmall: TextStyle(
+      color: Color.fromRGBO(255, 255, 255, 0.15),
     ),
   ),
   canvasColor: const Color(0xFF252528),

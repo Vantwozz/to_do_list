@@ -240,8 +240,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                             item,
                             style: TextStyle(
                               color: item == '!!High'
-                                  ? const Color.fromRGBO(255, 59, 48, 1)
-                                  : const Color.fromRGBO(0, 0, 0, 0.3),
+                                  ? Theme.of(context).textTheme.headlineMedium!.color
+                                  : Theme.of(context).textTheme.headlineSmall!.color,
                             ),
                           ),
                         );
@@ -254,8 +254,8 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                           items,
                           style: TextStyle(
                             color: items == '!!High'
-                                ? const Color(0xFFFF3B30)
-                                : const Color.fromRGBO(0, 0, 0, 1),
+                                ? Theme.of(context).textTheme.headlineMedium!.color
+                                : Theme.of(context).textTheme.bodyLarge!.color,
                             fontSize: 14,
                           ),
                         ),
@@ -359,16 +359,16 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                 icon: Icon(
                   Icons.delete,
                   color: isNewTask!
-                      ? const Color.fromRGBO(0, 0, 0, 0.15)
-                      : const Color(0xFFFF3B30),
+                      ? Theme.of(context).textTheme.titleSmall!.color
+                      : Theme.of(context).textTheme.headlineMedium!.color,
                 ),
                 label: Text(
                   'Delete',
                   style: TextStyle(
                     fontSize: 16,
                     color: isNewTask!
-                        ? const Color.fromRGBO(0, 0, 0, 0.15)
-                        : const Color(0xFFFF3B30),
+                        ? Theme.of(context).textTheme.titleSmall!.color
+                        : Theme.of(context).textTheme.headlineMedium!.color,
                   ),
                 ),
                 style: ButtonStyle(
