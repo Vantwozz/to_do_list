@@ -9,7 +9,7 @@ jobs:
         with:
           channel: 'stable'
       - run: echo "var token = '${{secrets.TOKEN_TYPE}}';" > ./lib/token.dart
-      - run: echo "var url = '${secrets.{TOKEN}};" >> ./lib/token.dart
+      - run: echo "var url = '${{secrets.{TOKEN}};" >> ./lib/token.dart
       - run: flutter pub get
       - run: dart format --set-exit-if-changed lib/
   #analyze:
