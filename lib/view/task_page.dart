@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
-import 'package:to_do_list/navigation/navigation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/navigation/navigation.dart';
+import 'package:to_do_list/view/task_page_provider.dart';
 
-class TaskPage extends StatefulWidget {
+import '../locator.dart';
+
+class TaskPage extends ConsumerStatefulWidget {
   const TaskPage({required this.task, Key? key}) : super(key: key);
   final Task task;
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  ConsumerState<TaskPage> createState() => _TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskPageState extends ConsumerState<TaskPage> {
   Task? task;
   bool? isNewTask;
   String? taskName;
@@ -20,40 +24,49 @@ class _TaskPageState extends State<TaskPage> {
     'Low',
     '!!High',
   ];
-  bool _switch = false;
-  DateTime? date;
-  String? dropdownValue;
+
   TextEditingController? textController;
 
   @override
   void initState() {
-    logger.l.d('Task page opened');
+    MyLogger.l.d('Task page opened');
     task = widget.task;
     isNewTask = task!.text == null;
-    if (task!.date != null) {
-      _switch = true;
-      date = task!.date;
-    }
-    switch (task!.priority) {
-      case Priority.none:
-        dropdownValue = priorityList[0];
-        break;
-      case Priority.low:
-        dropdownValue = priorityList[1];
-        break;
-      case Priority.high:
-        dropdownValue = priorityList[2];
-        break;
-    }
+    _initTask();
     taskName = task!.text;
     textController = TextEditingController(text: taskName);
     // TODO: implement initState
     super.initState();
   }
 
+  Future<void> _initTask() async {
+    await Future.delayed(const Duration(microseconds: 1));
+    if (task!.date != null) {
+      ref.read(dateProvider.notifier).update((state) => task!.date);
+      ref.read(switchProvider.notifier).update((state) => true);
+    }
+    switch (task!.priority) {
+      case Priority.none:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[0]);
+        break;
+      case Priority.low:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[1]);
+        break;
+      case Priority.high:
+        ref
+            .read(dropdownValueProvider.notifier)
+            .update((state) => priorityList[2]);
+        break;
+    }
+  }
+
   Priority _dropdownValueToPriority() {
     Priority? pr;
-    switch (dropdownValue) {
+    switch (ref.read(dropdownValueProvider)) {
       case 'None':
         pr = Priority.none;
         break;
@@ -75,40 +88,40 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void _onGoBack() {
-    logger.l.d('Go back button pressed. Task page closing');
-    NavigationManager.instance.pop(task);
+    MyLogger.l.d('Go back button pressed. Task page closing');
+    locator.get<NavigationManager>().pop(task);
   }
 
   void _onDelete() async {
     if (await _promptUser()) {
-      logger.l.d('Task page closing');
-      NavigationManager.instance.pop(
-        Task(task!.id),
-      );
+      MyLogger.l.d('Task page closing');
+      locator.get<NavigationManager>().pop(
+            Task(task!.id),
+          );
     }
   }
 
   void _onSave() {
-    logger.l.d('Save button pressed');
+    MyLogger.l.d('Save button pressed');
     if (textController!.text != '') {
-      logger.l.d('Task page closing');
-      NavigationManager.instance.pop(
-        Task(
-          task!.id,
-          textController!.text,
-          _dropdownValueToPriority(),
-          task!.done,
-          date,
-        ),
-      );
+      MyLogger.l.d('Task page closing');
+      locator.get<NavigationManager>().pop(
+            Task(
+              task!.id,
+              textController!.text,
+              _dropdownValueToPriority(),
+              task!.done,
+              ref.read(dateProvider),
+            ),
+          );
     } else {
-      logger.l.d('Task is empty');
+      MyLogger.l.d('Task is empty');
       _onDelete();
     }
   }
 
   Future<bool> _promptUser() async {
-    logger.l.d('Asking for deletion/going back');
+    MyLogger.l.d('Asking for deletion/going back');
     return await showDialog<bool>(
           builder: (BuildContext context) {
             return AlertDialog(
@@ -122,7 +135,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   child: const Text('Cancel'),
                   onPressed: () {
-                    logger.l.d('Deletion/going back cancelled');
+                    MyLogger.l.d('Deletion/going back cancelled');
                     Navigator.of(context).pop(false);
                   },
                 ),
@@ -132,7 +145,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   child: const Text('Ok'),
                   onPressed: () {
-                    logger.l.d('Deletion/going back confirmed');
+                    MyLogger.l.d('Deletion/going back confirmed');
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -241,12 +254,12 @@ class _TaskPageState extends State<TaskPage> {
                       );
                     }).toList(),
                     onChanged: (String? value) {
-                      setState(() {
-                        logger.l.d('Priority chosen');
-                        dropdownValue = value!;
-                      });
+                      MyLogger.l.d('Priority chosen');
+                      ref
+                          .read(dropdownValueProvider.notifier)
+                          .update((state) => value!);
                     },
-                    value: dropdownValue,
+                    value: ref.watch(dropdownValueProvider),
                     icon: const Visibility(
                       visible: false,
                       child: Icon(
@@ -274,8 +287,9 @@ class _TaskPageState extends State<TaskPage> {
                         ),
                       ),
                       Text(
-                        date != null
-                            ? DateFormat('yyyy-MM-dd').format(date!)
+                        ref.watch(dateProvider) != null
+                            ? DateFormat('yyyy-MM-dd')
+                                .format(ref.watch(dateProvider)!)
                             : '',
                         style: const TextStyle(
                           fontSize: 14,
@@ -286,12 +300,12 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   const Spacer(),
                   Switch(
-                    value: _switch,
+                    value: ref.watch(switchProvider),
                     onChanged: (bool value) async {
-                      logger.l.d('Make by date switch changed');
-                      setState(() {
-                        _switch = value;
-                      });
+                      MyLogger.l.d('Make by date switch changed');
+                      ref
+                          .read(switchProvider.notifier)
+                          .update((state) => value);
                       if (value) {
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
@@ -300,21 +314,19 @@ class _TaskPageState extends State<TaskPage> {
                           lastDate: DateTime(2101),
                         );
                         if (pickedDate != null) {
-                          logger.l.d('Date set');
-                          setState(() {
-                            date = pickedDate;
-                          });
+                          MyLogger.l.d('Date set');
+                          ref
+                              .read(dateProvider.notifier)
+                              .update((state) => pickedDate);
                         } else {
-                          logger.l.d('Date wasn\'t selected');
-                          setState(() {
-                            _switch = false;
-                          });
+                          MyLogger.l.d("Date wasn't selected");
+                          ref
+                              .read(switchProvider.notifier)
+                              .update((state) => false);
                         }
                       } else {
-                        logger.l.d('Make by date turned off');
-                        setState(() {
-                          date = null;
-                        });
+                        MyLogger.l.d('Make by date turned off');
+                        ref.read(dateProvider.notifier).update((state) => null);
                       }
                     },
                   ),
@@ -332,7 +344,7 @@ class _TaskPageState extends State<TaskPage> {
                 onPressed: isNewTask!
                     ? null
                     : () {
-                        logger.l.d('Delete button pressed');
+                        MyLogger.l.d('Delete button pressed');
                         _onDelete();
                       },
                 icon: Icon(

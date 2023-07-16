@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:to_do_list/utils/utils.dart';
-import 'package:to_do_list/utils/token.dart';
-import 'package:to_do_list/managers/network_manager.dart';
-import 'package:to_do_list/managers/persistence_manager.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/repository/network_manager.dart';
+import 'package:to_do_list/repository/persistence_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class DataManager {
-  DataManager._();
+  DataManager(this.networkManager, this.persistenceManager);
 
   Future<bool> checkConnection() async {
     try {
@@ -19,11 +17,9 @@ class DataManager {
     }
   }
 
-  static final manager = DataManager._();
-
-  final networkManager = NetworkManager(token);
-  final persistenceManager = PersistenceManager();
-  bool? _connection;
+  NetworkManager networkManager; // = NetworkManager(token);
+  PersistenceManager persistenceManager; // = PersistenceManager();
+  bool _connection = true;
   final _uuid = const Uuid();
 
   Future<bool> equalLists() async {
@@ -45,7 +41,7 @@ class DataManager {
   }
 
   Future<List<AdvancedTask>> getList() async {
-    if (_connection!) {
+    if (_connection) {
       return await networkManager.getFullList();
     } else {
       return await persistenceManager.getList();
@@ -53,23 +49,34 @@ class DataManager {
   }
 
   Future<AdvancedTask?> getTaskById(String id) async {
-    if (_connection!) {
+    if (_connection) {
       return await networkManager.getTaskById(id);
     } else {
       return await persistenceManager.getTask(id: id);
     }
   }
 
-  Future<void> deleteTaskById(String id) async {
-    if (_connection!) {
-      await networkManager.deleteTaskById(id);
+  Future<bool> deleteTaskById(String id) async {
+    bool ans = true;
+    if (_connection) {
+      try {
+        await networkManager.deleteTaskById(id);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.deleteTask(id: id);
+    return ans;
   }
 
-  Future<void> createTask(Task task) async {
-    if (_connection!) {
-      await networkManager.createTask(task);
+  Future<bool> createTask(Task task) async {
+    bool ans = true;
+    if (_connection) {
+      try {
+        await networkManager.createTask(task);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.insertTask(
       task: AdvancedTask(
@@ -86,11 +93,17 @@ class DataManager {
         lastUpdatedBy: "1",
       ),
     );
+    return ans;
   }
 
-  Future<void> updateTask(Task task) async {
-    if (_connection!) {
-      await networkManager.changeTask(task);
+  Future<bool> updateTask(Task task) async {
+    bool ans = true;
+    if (_connection) {
+      try {
+        await networkManager.changeTask(task);
+      } catch (exception) {
+        ans = false;
+      }
     }
     await persistenceManager.updateTask(
       task: AdvancedTask(
@@ -107,14 +120,27 @@ class DataManager {
         lastUpdatedBy: "1",
       ),
     );
+    return ans;
   }
 
-  Future<void> uploadFromLocal() async {
-    await networkManager.patchList(await persistenceManager.getList());
+  Future<bool> uploadFromLocal() async {
+    bool ans = true;
+    try {
+      await networkManager.patchList(await persistenceManager.getList());
+    } catch (exception) {
+      ans = false;
+    }
+    return ans;
   }
 
-  Future<void> downloadToLocal() async {
-    await persistenceManager.updateList(
-        list: await networkManager.getFullList());
+  Future<bool> downloadToLocal() async {
+    bool ans = true;
+    try {
+      await persistenceManager.updateList(
+          list: await networkManager.getFullList());
+    } catch (exception) {
+      ans = false;
+    }
+    return ans;
   }
 }

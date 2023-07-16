@@ -1,25 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:to_do_list/utils/utils.dart';
-import 'package:to_do_list/utils/token.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/token.dart';
 
 class NetworkManager {
-  NetworkManager(this._token) {
+  NetworkManager(this._token, this._dio) {
     _dio.options.headers["Authorization"] = "Bearer $_token";
-    _Revision();
+    _revisionGetter();
   }
 
   Future<void> checkConnection() async {
     await _dio.get(_url);
   }
 
-  void _Revision() async {
+  void _revisionGetter() async {
     await getRevision();
   }
 
   int? _revision;
   final String _token;
-  final _dio = Dio();
+  final Dio _dio;
   final String _url = url;
 
   Future<void> getRevision() async {

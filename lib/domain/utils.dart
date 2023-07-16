@@ -1,6 +1,5 @@
-import 'dart:ffi';
-
 import 'package:logger/logger.dart';
+import 'package:quiver/core.dart';
 
 enum Priority {
   none,
@@ -19,7 +18,7 @@ class Task {
       [this.text, this.priority = Priority.none, this.done = false, this.date]);
 }
 
-class logger {
+class MyLogger {
   static var l = Logger();
 }
 
@@ -74,4 +73,20 @@ class AdvancedTask {
             createdAt == other.createdAt &&
             lastUpdatedBy == other.lastUpdatedBy);
   }
+
+  @override
+  int get hashCode => hash2(
+        hash4(
+          id.hashCode,
+          text.hashCode,
+          importance.hashCode,
+          deadline.hashCode,
+        ),
+        hash4(
+          done.hashCode,
+          color.hashCode,
+          createdAt.hashCode,
+          lastUpdatedBy.hashCode,
+        ),
+      );
 }

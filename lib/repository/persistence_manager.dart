@@ -1,6 +1,6 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
 
 class PersistenceManager {
   Database? _database;

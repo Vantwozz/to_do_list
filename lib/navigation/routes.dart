@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/pages/unknown_page.dart';
-import 'package:to_do_list/pages/home/home_page.dart';
-import 'package:to_do_list/pages/tasks/task_page.dart';
-import 'package:to_do_list/utils/utils.dart';
+import 'package:to_do_list/domain/utils.dart';
+import 'package:to_do_list/view/home_page.dart';
+import 'package:to_do_list/view/task_page.dart';
+import 'package:to_do_list/view/unknown_page.dart';
 
 abstract class RouteNames {
   const RouteNames._();
