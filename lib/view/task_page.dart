@@ -240,8 +240,14 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                             item,
                             style: TextStyle(
                               color: item == '!!High'
-                                  ? Theme.of(context).textTheme.headlineMedium!.color
-                                  : Theme.of(context).textTheme.headlineSmall!.color,
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .color
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .color,
                             ),
                           ),
                         );
@@ -254,7 +260,10 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                           items,
                           style: TextStyle(
                             color: items == '!!High'
-                                ? Theme.of(context).textTheme.headlineMedium!.color
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .color
                                 : Theme.of(context).textTheme.bodyLarge!.color,
                             fontSize: 14,
                           ),
