@@ -22,3 +22,15 @@ jobs:
       - run: echo "var url = '${{secrets.TOKEN}}';" >> ./lib/token.dart
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos
+
+    analyze:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - uses: subosito/flutter-action@v2
+          with:
+            channel: 'stable'
+        - run: echo "var token = '${{secrets.TOKEN_TYPE}}';" > ./lib/token.dart
+        - run: echo "var url = '${{secrets.TOKEN}}';" >> ./lib/token.dart
+        - run: flutter pub get
+        - run: flutter test
