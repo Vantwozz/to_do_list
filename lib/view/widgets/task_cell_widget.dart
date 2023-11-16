@@ -84,9 +84,9 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
     TextDecoration decoration;
     if (task!.done) {
       decoration = TextDecoration.lineThrough;
-      textColor = const Color.fromRGBO(0, 0, 0, 0.3);
+      textColor = Theme.of(context).textTheme.bodySmall!.color!;
     } else {
-      textColor = const Color.fromRGBO(0, 0, 0, 1);
+      textColor = Theme.of(context).textTheme.bodyLarge!.color!;
       decoration = TextDecoration.none;
     }
     return Text(
@@ -127,7 +127,7 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
       onDismissed: (direction) => widget.onDismissed(direction),
       confirmDismiss: (direction) => widget.confirmDismiss(direction),
       child: Material(
-        color: Colors.white,
+        color: Theme.of(context).canvasColor,
         borderRadius: widget.borderRadius,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,8 +156,11 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
                             task!.date != null
                                 ? DateFormat('yyyy-MM-dd').format(task!.date!)
                                 : '',
-                            style: const TextStyle(
-                                color: Color.fromRGBO(0, 0, 0, 0.3),
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .color,
                                 fontSize: 14),
                           ),
                         ),
@@ -169,9 +172,9 @@ class _TaskCellWidgetState extends ConsumerState<TaskCellWidget> {
             ),
             IconButton(
               onPressed: () => widget.onInfoPressed(),
-              icon: const Icon(
+              icon: Icon(
                 Icons.info_outline,
-                color: Color.fromRGBO(0, 0, 0, 0.3),
+                color: Theme.of(context).textTheme.headlineSmall!.color,
               ),
             ),
           ],

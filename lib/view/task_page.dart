@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
   @override
   void initState() {
     MyLogger.l.d('Task page opened');
+    locator.get<FirebaseAnalytics>().logEvent(
+          name: 'Task page opened',
+        );
     task = widget.task;
     isNewTask = task!.text == null;
     _initTask();
@@ -165,22 +169,26 @@ class _TaskPageState extends ConsumerState<TaskPage> {
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
-            backgroundColor: const Color(0xFFf7f6f2),
+            backgroundColor: Theme.of(context).primaryColor,
             leading: CloseButton(
               onPressed: () {
                 _onGoBack();
               },
-              color: Colors.black,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
             ),
             actions: [
               TextButton(
                 onPressed: () {
                   _onSave();
                 },
-                child: const Text(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                      Theme.of(context).primaryColor),
+                ),
+                child: Text(
                   'Save',
                   style: TextStyle(
-                    color: Color(0xFF007AFF),
+                    color: Theme.of(context).iconTheme.color,
                     fontSize: 14,
                   ),
                 ),
@@ -201,7 +209,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                     ),
                     hintText: 'Task to do',
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).canvasColor,
                   ),
                   autofocus: false,
                   maxLines: null,
@@ -232,8 +240,14 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                             item,
                             style: TextStyle(
                               color: item == '!!High'
-                                  ? const Color.fromRGBO(255, 59, 48, 1)
-                                  : const Color.fromRGBO(0, 0, 0, 0.3),
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .color
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .color,
                             ),
                           ),
                         );
@@ -246,8 +260,11 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                           items,
                           style: TextStyle(
                             color: items == '!!High'
-                                ? const Color(0xFFFF3B30)
-                                : const Color.fromRGBO(0, 0, 0, 1),
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .color
+                                : Theme.of(context).textTheme.bodyLarge!.color,
                             fontSize: 14,
                           ),
                         ),
@@ -291,9 +308,9 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                             ? DateFormat('yyyy-MM-dd')
                                 .format(ref.watch(dateProvider)!)
                             : '',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF007AFF),
+                          color: Theme.of(context).iconTheme.color,
                         ),
                       ),
                     ],
@@ -301,6 +318,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                   const Spacer(),
                   Switch(
                     value: ref.watch(switchProvider),
+                    activeColor: Theme.of(context).iconTheme.color,
                     onChanged: (bool value) async {
                       MyLogger.l.d('Make by date switch changed');
                       ref
@@ -335,7 +353,7 @@ class _TaskPageState extends ConsumerState<TaskPage> {
             ),
           ),
           const SliverToBoxAdapter(
-            child: Divider(color: Color.fromRGBO(0, 0, 0, 0.2)),
+            child: Divider(),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -350,24 +368,28 @@ class _TaskPageState extends ConsumerState<TaskPage> {
                 icon: Icon(
                   Icons.delete,
                   color: isNewTask!
-                      ? const Color.fromRGBO(0, 0, 0, 0.15)
-                      : const Color(0xFFFF3B30),
+                      ? Theme.of(context).textTheme.titleSmall!.color
+                      : Theme.of(context).textTheme.headlineMedium!.color,
                 ),
                 label: Text(
                   'Delete',
                   style: TextStyle(
                     fontSize: 16,
                     color: isNewTask!
-                        ? const Color.fromRGBO(0, 0, 0, 0.15)
-                        : const Color(0xFFFF3B30),
+                        ? Theme.of(context).textTheme.titleSmall!.color
+                        : Theme.of(context).textTheme.headlineMedium!.color,
                   ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                      Theme.of(context).primaryColor),
                 ),
               ),
             ),
           ),
         ],
       ),
-      backgroundColor: const Color(0xFFf7f6f2),
+      backgroundColor: Theme.of(context).primaryColor,
     );
   }
 }

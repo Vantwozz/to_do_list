@@ -1,5 +1,6 @@
-import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:get_it/get_it.dart';
 import 'package:to_do_list/domain/data_manager.dart';
 import 'package:to_do_list/navigation/navigation.dart';
 import 'package:to_do_list/repository/network_manager.dart';
@@ -17,5 +18,8 @@ void setup() {
       NetworkManager(token, Dio()),
       PersistenceManager(),
     ),
+  );
+  locator.registerLazySingleton<FirebaseAnalytics>(
+    () => FirebaseAnalytics.instance,
   );
 }

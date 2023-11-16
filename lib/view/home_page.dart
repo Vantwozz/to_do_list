@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:to_do_list/domain/data_manager.dart';
@@ -167,6 +168,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     MyLogger.l.d('Info button pressed. Opening task page');
     final result = await locator.get<NavigationManager>().openTask(task);
     MyLogger.l.d('Task page closed');
+    locator.get<FirebaseAnalytics>().logEvent(
+          name: 'Task page closed',
+        );
     if (result != null) {
       if (result.text != null) {
         ref.read(listProvider[index].notifier).update((state) => result);
@@ -190,6 +194,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> _onTaskCreate() async {
+    locator.get<FirebaseAnalytics>().logEvent(
+          name: 'Creating task',
+        );
     MyLogger.l.d('Creation button pressed. Opening task page');
     final result = await locator
         .get<NavigationManager>()
@@ -284,6 +291,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: const Text('Ok'),
                   onPressed: () {
                     MyLogger.l.d('Deletion confirmed');
+                    locator.get<FirebaseAnalytics>().logEvent(
+                          name: 'Deletion confirmed',
+                        );
                     Navigator.of(context).pop(true);
                   },
                 ),
@@ -299,7 +309,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     var itemCount = ref.watch(length);
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F6F2),
+      backgroundColor: Theme.of(context).primaryColor,
       body: CustomScrollView(
         controller: ScrollController(),
         slivers: <Widget>[
@@ -377,29 +387,24 @@ class _HomePageState extends ConsumerState<HomePage> {
                               : const Radius.circular(0.0),
                           bottom: const Radius.circular(8.0),
                         ),
-                        color: const Color.fromRGBO(255, 255, 255, 1),
+                        color: Theme.of(context).canvasColor,
                       ),
                       child: TextButton(
                         onPressed: () {
                           MyLogger.l.d('Pressed \'add\' button in list');
                           _onTaskCreate();
                         },
-                        style: TextButton.styleFrom(
+                        /*style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
-                        ),
-                        child: const Row(
+                        ),*/
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 40,
                             ),
-                            Text(
-                              'Add',
-                              style: TextStyle(
-                                color: Color.fromRGBO(0, 0, 0, 0.3),
-                                fontSize: 16,
-                              ),
-                            ),
+                            Text('Add',
+                                style: Theme.of(context).textTheme.bodySmall),
                           ],
                         ),
                       ),
